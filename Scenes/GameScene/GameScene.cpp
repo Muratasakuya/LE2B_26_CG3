@@ -43,7 +43,7 @@ GameScene::GameScene() {
 	plane_ = std::make_unique<Object3D>(Object3DType::Model);
 
 	// 初期化
-	plane_->SetEnableLighting(false);
+	plane_->SetEnableLighting(true);
 	plane_->SetEnableHalfLambert(true);
 	plane_->Initilize(camera3D_.get());
 

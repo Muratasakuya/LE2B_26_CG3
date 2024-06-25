@@ -41,7 +41,7 @@ public:
 	virtual ~Object() {}
 
 	// setter
-
+	
 	void SetEnableLighting(bool enableLighting);
 	void SetEnableHalfLambert(bool enableHalfLambert);
 	void SetScale(Vector3 scale);
@@ -71,6 +71,8 @@ protected:
 
 	// ライトの向き
 	Vector3 lightDirection_{};
+	// 輝度
+	float intensity_{};
 	// Lightingの有無
 	bool enableLighting_{};
 	// HalfLambertの有無

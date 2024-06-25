@@ -47,6 +47,8 @@ void Object3D::Initilize(Camera3D* camera) {
 
 	// ライトの向き
 	lightDirection_ = { 0.0f,-1.0f,0.0f };
+	// 輝度
+	intensity_ = 1.0f;
 
 	// アフィン
 	transform_.scale = { 1.0f,1.0f,1.0f };
@@ -68,7 +70,7 @@ void Object3D::Initilize(Camera3D* camera) {
 	// Light
 	cBuffer_->light->data->color = { 1.0f,1.0f,1.0f,1.0f };
 	cBuffer_->light->data->direction = lightDirection_;
-	cBuffer_->light->data->intensity = 1.0f;
+	cBuffer_->light->data->intensity = intensity_;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
@@ -94,6 +96,7 @@ void Object3D::Update(Camera3D* camera) {
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
 	ImGui::SliderFloat3("translate", &transform_.translate.x, -5.0f, 5.0f);
 	ImGui::SliderFloat3("LightDirection", &lightDirection_.x, -1.0f, 1.0f);
+	ImGui::DragFloat("intensity", &intensity_, 0.005f);
 
 	ImGui::End();
 
@@ -112,6 +115,7 @@ void Object3D::Update(Camera3D* camera) {
 
 	// Light
 	cBuffer_->light->data->direction = lightDirection_;
+	cBuffer_->light->data->intensity = intensity_;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
