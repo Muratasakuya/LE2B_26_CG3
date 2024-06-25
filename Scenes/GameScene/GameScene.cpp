@@ -169,7 +169,7 @@ void GameScene::Update() {
 		"Screen"
 	};
 
-	ImGui::Begin("Fence");
+	ImGui::Begin("fence");
 
 	// BlendModeのドロップダウン
 	int currentBlendMode = static_cast<int>(fenceBlendMode_);
