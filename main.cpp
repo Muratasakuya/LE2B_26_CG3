@@ -35,6 +35,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// メインループ
 	sceneManager->Run();
 
+	sceneManager.reset();
+
 	// ライブラリ終了
 	Engine::Finalize();
 

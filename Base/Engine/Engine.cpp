@@ -77,6 +77,11 @@ bool Engine::ProcessMessage() {
 void Engine::Finalize() {
 
 	imguiManager_->Finalize();
+	dxCommon_->Finalize(winApp_);
+
+	mesh_.reset();
+	sprite_.reset();
+	pipelineManager_.reset();
 
 	// ComFinalize
 	CoUninitialize();

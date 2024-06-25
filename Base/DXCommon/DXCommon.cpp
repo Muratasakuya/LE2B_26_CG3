@@ -394,3 +394,21 @@ void DXCommon::Initialize(WinApp* winApp, uint32_t width, uint32_t height) {
 		device_->GetDevice(),swapChain_->GetSwapChainResources(0), swapChain_->GetSwapChainResources(1),
 		kClientWidth_, kClientHeight_);
 }
+
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+
+*									終了処理
+
+////////////////////////////////////////////////////////////////////////////////*/
+void DXCommon::Finalize(WinApp* winApp) {
+
+	CloseHandle(fenceEvent_);
+
+	device_.reset();
+	swapChain_.reset();
+	descriptor_.reset();
+
+	CloseWindow(winApp->GetHwnd());
+}

@@ -2,6 +2,21 @@
 
 #include "DXCommon.h"
 
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+*								 デストラクタ
+////////////////////////////////////////////////////////////////////////////////*/
+PipelineManager::~PipelineManager() {
+
+	rootSignature_.reset();
+	inputLayout_.reset();
+	rasterizerState_.reset();
+	depthStencil_.reset();
+}
+
+
+
 // DXCを使用してShaderをCompileする
 IDxcBlob* PipelineManager::CompileShader(
 	// CompilerするShaderファイルへのパス

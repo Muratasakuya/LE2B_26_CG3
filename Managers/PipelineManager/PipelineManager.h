@@ -27,7 +27,7 @@ public:
 	/*-----------------------------*/
 
 	PipelineManager() {};
-	~PipelineManager() {};
+	~PipelineManager();
 
 	void CreatePipelineStateObject(DXCommon* dxCommon);
 
@@ -43,9 +43,10 @@ private:
 
 	std::unique_ptr<DXRootSignature> rootSignature_;
 	std::unique_ptr<DXInputLayout> inputLayout_;
-	DXBlendState blendState_;
 	std::unique_ptr<DXRasterizerState> rasterizerState_;
 	std::unique_ptr<DXDepthStencil> depthStencil_;
+
+	DXBlendState blendState_;
 
 	std::array<ComPtr<IDxcBlob>, pipelineTypeNum> vsBlob_;
 	std::array<ComPtr<IDxcBlob>, pipelineTypeNum> psBlob_;

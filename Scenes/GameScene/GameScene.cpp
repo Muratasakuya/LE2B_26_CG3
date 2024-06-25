@@ -53,7 +53,7 @@ GameScene::GameScene() {
 	// 描画タイプ
 	planeDrawType_ = Texture;
 	// ブレンドモード
-	planeBlendMode_ = kBlendModeNone;
+	planeBlendMode_ = kBlendModeNormal;
 
 	// テクスチャ読み込み
 	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
@@ -67,8 +67,12 @@ GameScene::GameScene() {
 /*////////////////////////////////////////////////////////////////////////////////
 *								  デストラクタ
 ////////////////////////////////////////////////////////////////////////////////*/
-GameScene::~GameScene() {}
+GameScene::~GameScene() {
 
+	camera2D_.reset();
+	camera3D_.reset();
+	plane_.reset();
+}
 
 
 /*////////////////////////////////////////////////////////////////////////////////

@@ -27,7 +27,13 @@ Object3D::Object3D(Object3DType objectType) {
 /*////////////////////////////////////////////////////////////////////////////////
 *								 デストラクタ
 ////////////////////////////////////////////////////////////////////////////////*/
-Object3D::~Object3D() {}
+Object3D::~Object3D() {
+
+	cBuffer_->material.reset();
+	cBuffer_->matrix.reset();
+	cBuffer_->light.reset();
+	cBuffer_.reset();
+}
 
 
 

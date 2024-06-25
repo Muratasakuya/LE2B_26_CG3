@@ -35,6 +35,8 @@ public:
 	void PreDraw();
 	void PostDraw();
 
+	void Finalize(WinApp* winApp);
+
 	// singleton
 	static DXCommon* GetInstance();
 
