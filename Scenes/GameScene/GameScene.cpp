@@ -89,26 +89,29 @@ GameScene::GameScene() {
 	sphereTextureName_ = "uvChecker";
 
 	/*------------------------------------------------------*/
-	// モデル teapot
+	// モデル plane
 
 	// 生成
-	teapot_ = std::make_unique<Object3D>(Object3DType::Model);
+	plane_ = std::make_unique<Object3D>(Object3DType::Model);
 
 	// 初期化
-	teapot_->SetEnableLighting(true);
-	teapot_->SetEnableHalfLambert(true);
-	teapot_->Initilize(camera3D_.get());
+	plane_->SetEnableLighting(true);
+	plane_->SetEnableHalfLambert(true);
+	plane_->Initilize(camera3D_.get());
+
+	// Y軸を180度回転
+	plane_->SetRotate({ 0.0f,std::numbers::pi_v<float>,0.0f });
 
 	// 描画タイプ
-	teapotDrawType_ = Texture;
+	planeDrawType_ = Texture;
 
 	// テクスチャ読み込み
 	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
-	teapotTextureName_ = "uvChecker";
+	planeTextureName_ = "uvChecker";
 
 	// モデル読み込み
-	ModelManager::GetInstance()->LoadModel("./Resources/Obj", "teapot.obj");
-	teapotModelName_ = "teapot";
+	ModelManager::GetInstance()->LoadModel("./Resources/Obj", "plane.obj");
+	planeModelName_ = "plane";
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -151,8 +154,8 @@ void GameScene::Initialize() {
 	// 球
 	sphere_->Initilize(camera3D_.get());
 
-	// teapot
-	teapot_->Initilize(camera3D_.get());
+	// plane
+	plane_->Initilize(camera3D_.get());
 
 }
 
@@ -191,8 +194,8 @@ void GameScene::Update() {
 	// 球
 	//sphere_->Update(camera3D_.get());
 
-	// teapot
-	teapot_->Update(camera3D_.get());
+	// plane
+	plane_->Update(camera3D_.get());
 
 }
 
@@ -219,7 +222,7 @@ void GameScene::Draw() {
 	// 球
 	//sphere_->Draw(sphereDrawType_, sphereTextureName_);
 
-	// teapot
-	teapot_->Draw(teapotDrawType_, teapotTextureName_, teapotModelName_);
+	// plane
+	plane_->Draw(planeDrawType_, planeTextureName_, planeModelName_);
 
 }

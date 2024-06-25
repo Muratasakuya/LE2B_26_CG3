@@ -86,16 +86,16 @@ private:
 	std::string sphereTextureName_;
 
 	/*----------------------------------------------------------------------*/
-	// モデル teapot
-	std::unique_ptr<Object3D> teapot_;
+	// モデル plane
+	std::unique_ptr<Object3D> plane_;
 
 	// 描画タイプ
-	PipelineType teapotDrawType_;
+	PipelineType planeDrawType_;
 
 	// モデルの名前
-	std::string teapotModelName_;
+	std::string planeModelName_;
 
 	// テクスチャの名前
-	std::string teapotTextureName_;
+	std::string planeTextureName_;
 
 };

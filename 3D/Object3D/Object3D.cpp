@@ -4,6 +4,7 @@
 #include "Engine.h"
 
 #include "Camera3D.h"
+#include "ImGuiManager.h"
 
 
 
@@ -75,8 +76,22 @@ void Object3D::Initilize(Camera3D* camera) {
 ////////////////////////////////////////////////////////////////////////////////*/
 void Object3D::Update(Camera3D* camera) {
 
-	// Y軸回転
-	transform_.rotate.y += 0.03f;
+	/*----------------------------------------------------------------------------------------------------------------*/
+	/// ImGui
+
+	ImGui::Begin("Plane");
+
+	ImGui::ColorEdit4("color", &color_.x);
+	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 1.0f);
+	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
+	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
+	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
+	ImGui::SliderFloat3("translate", &transform_.translate.x, -5.0f, 5.0f);
+	ImGui::SliderFloat3("LightDirection", &lightDirection_.x, -1.0f, 1.0f);
+
+	ImGui::End();
+
+	/*----------------------------------------------------------------------------------------------------------------*/
 
 	// Matrix
 	matrix_.World =
