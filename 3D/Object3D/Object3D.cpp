@@ -85,7 +85,7 @@ void Object3D::Update(Camera3D* camera) {
 	/*----------------------------------------------------------------------------------------------------------------*/
 	/// ImGui
 
-	ImGui::Begin("Plane");
+	ImGui::Begin("fence");
 
 	ImGui::ColorEdit4("color", &color_.x);
 	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 1.0f);

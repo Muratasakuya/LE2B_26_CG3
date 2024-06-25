@@ -30,12 +30,12 @@ GameScene::GameScene() {
 
 	/*======================================================*/
 	// 2Dオブジェクト
-	
+
 
 
 	/*======================================================*/
 	// 3Dオブジェクト
-	
+
 	/*------------------------------------------------------*/
 	// モデル plane
 
@@ -62,6 +62,32 @@ GameScene::GameScene() {
 	// モデル読み込み
 	ModelManager::GetInstance()->LoadModel("./Resources/Obj", "plane.obj");
 	planeModelName_ = "plane";
+
+	/*------------------------------------------------------*/
+	// モデル fence
+
+	// 生成
+	fence_ = std::make_unique<Object3D>(Object3DType::Model);
+
+	// 初期化
+	fence_->SetEnableLighting(false);
+	fence_->SetEnableHalfLambert(true);
+	fence_->Initilize(camera3D_.get());
+
+	fence_->SetRotate({ std::numbers::pi_v<float> / 6.0f,std::numbers::pi_v<float>,0.0f });
+
+	// 描画タイプ
+	fenceDrawType_ = Texture;
+	// ブレンドモード
+	fenceBlendMode_ = kBlendModeNormal;
+
+	// テクスチャ読み込み
+	TextureManager::GetInstance()->LoadTexture("./Resources/Images/fence.png");
+	fenceTextureName_ = "fence";
+
+	// モデル読み込み
+	ModelManager::GetInstance()->LoadModel("./Resources/Obj", "fence.obj");
+	fenceModelName_ = "fence";
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +98,7 @@ GameScene::~GameScene() {
 	camera2D_.reset();
 	camera3D_.reset();
 	plane_.reset();
+	fence_.reset();
 }
 
 
@@ -100,6 +127,9 @@ void GameScene::Initialize() {
 
 	// plane
 	plane_->Initilize(camera3D_.get());
+
+	// fence
+	fence_->Initilize(camera3D_.get());
 
 }
 
@@ -139,20 +169,20 @@ void GameScene::Update() {
 		"Screen"
 	};
 
-	ImGui::Begin("Plane");
+	ImGui::Begin("Fence");
 
 	// BlendModeのドロップダウン
-	int currentBlendMode = static_cast<int>(planeBlendMode_);
+	int currentBlendMode = static_cast<int>(fenceBlendMode_);
 
 	if (ImGui::Combo("Blend Mode", &currentBlendMode, BlendModeNames, IM_ARRAYSIZE(BlendModeNames))) {
 
-		planeBlendMode_ = static_cast<BlendMode>(currentBlendMode);
+		fenceBlendMode_ = static_cast<BlendMode>(currentBlendMode);
 	}
 
 	ImGui::End();
 
 	// plane
-	plane_->Update(camera3D_.get());
+	fence_->Update(camera3D_.get());
 
 }
 
@@ -179,7 +209,7 @@ void GameScene::Draw() {
 	// 球
 	//sphere_->Draw(sphereDrawType_, sphereTextureName_);
 
-	// plane
-	plane_->Draw(planeDrawType_, planeBlendMode_, planeTextureName_, planeModelName_);
+	// fence
+	fence_->Draw(fenceDrawType_, fenceBlendMode_, fenceTextureName_, fenceModelName_);
 
 }

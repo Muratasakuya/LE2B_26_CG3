@@ -45,6 +45,13 @@ PixelShaderOutput main(VertexShaderOutput input)
         if (gMaterial.enableHalfLambert != 0)
         {
             
+            // texture‚Ìƒ¿’l‚ª0.5fˆÈ‰º‚ÌŽž‚ÉPixel‚ðŠü‹p
+            if (textureColor.a <= 0.5f)
+            {
+            
+                discard;
+            }
+            
             float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
             float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
             output.color.rgb = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
@@ -53,6 +60,13 @@ PixelShaderOutput main(VertexShaderOutput input)
         }
         else
         {
+            
+            // texture‚Ìƒ¿’l‚ª0.5fˆÈ‰º‚ÌŽž‚ÉPixel‚ðŠü‹p
+            if (textureColor.a <= 0.5f)
+            {
+            
+                discard;
+            }
             
             float cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
         
@@ -64,6 +78,13 @@ PixelShaderOutput main(VertexShaderOutput input)
     }
     else
     {
+        
+        // texture‚Ìƒ¿’l‚ª0.5fˆÈ‰º‚ÌŽž‚ÉPixel‚ðŠü‹p
+        if (textureColor.a <= 0.5f)
+        {
+            
+            discard;
+        }
         
         output.color = gMaterial.color * textureColor;
     }

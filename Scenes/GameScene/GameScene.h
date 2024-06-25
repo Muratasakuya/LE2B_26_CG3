@@ -100,4 +100,20 @@ private:
 	// テクスチャの名前
 	std::string planeTextureName_;
 
+	/*----------------------------------------------------------------------*/
+	// モデル fence
+
+	std::unique_ptr<Object3D> fence_;
+
+	// 描画タイプ
+	PipelineType fenceDrawType_;
+	// ブレンドモード
+	BlendMode fenceBlendMode_;
+
+	// モデルの名前
+	std::string fenceModelName_;
+
+	// テクスチャの名前
+	std::string fenceTextureName_;
+
 };
