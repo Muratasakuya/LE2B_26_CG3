@@ -56,16 +56,16 @@ public:
 	/// 描画関数
 
 	// 三角形
-	static void DrawTriangle(const CBufferData* cBufferData, PipelineType pipelineType, const std::string textureName);
+	static void DrawTriangle(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// スプライト
-	static void DrawSprite(const CBufferData* cBufferData, PipelineType pipelineType,const std::string textureName);
+	static void DrawSprite(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// 球
-	static void DrawSphere(const CBufferData* cBufferData, PipelineType pipelineType, const std::string textureName);
+	static void DrawSphere(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// モデル
-	static void DrawModel(const CBufferData* cBufferData, PipelineType pipelineType, const std::string modelName, const std::string textureName);
+	static void DrawModel(const CBufferData* cBufferData, const std::string modelName,const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 private:
 	/*-----------------------------*/

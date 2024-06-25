@@ -117,28 +117,28 @@ void Object3D::Update(Camera3D* camera) {
 /*////////////////////////////////////////////////////////////////////////////////
 *								    描画処理
 ////////////////////////////////////////////////////////////////////////////////*/
-void Object3D::Draw(PipelineType pipelineType, const std::string& textureName, const std::optional<std::string>& modelName) {
+void Object3D::Draw(PipelineType pipelineType, BlendMode blendMode, const std::string& textureName, const std::optional<std::string>& modelName) {
 
 	switch (objectType_) {
 
 		// 三角形
 	case Object3DType::Triangle:
 
-		Engine::DrawTriangle(cBuffer_.get(), pipelineType, textureName);
+		Engine::DrawTriangle(cBuffer_.get(), textureName, pipelineType, blendMode);
 
 		break;
 
 		// 球
 	case Object3DType::Sphere:
 
-		Engine::DrawSphere(cBuffer_.get(), pipelineType, textureName);
+		Engine::DrawSphere(cBuffer_.get(), textureName, pipelineType, blendMode);
 
 		break;
 
 		// モデル
 	case Object3DType::Model:
 
-		Engine::DrawModel(cBuffer_.get(), pipelineType, *modelName, textureName);
+		Engine::DrawModel(cBuffer_.get(), *modelName, textureName, pipelineType, blendMode);
 
 		break;
 	}

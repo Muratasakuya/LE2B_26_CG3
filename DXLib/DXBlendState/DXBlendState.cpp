@@ -2,29 +2,93 @@
 
 
 
-// blendDesc_ getter
-D3D12_BLEND_DESC DXBlendState::GetBlendDesc() {
-
-	return blendDesc_;
-}
-
-
-
 /*////////////////////////////////////////////////////////////////////////////////
 
 *								DXBlendStateの生成
 
 ////////////////////////////////////////////////////////////////////////////////*/
-void DXBlendState::Create() {
+D3D12_RENDER_TARGET_BLEND_DESC DXBlendState::Create(BlendMode blendMode) {
 
-	// 全ての色要素を書き込む
-	// ブレンドモードNone D3D12_COLOR_WRITE_ENABLE_ALLだけ
-	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	blendDesc_.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	static D3D12_RENDER_TARGET_BLEND_DESC blendDesc{};
+
+	blendDesc.BlendEnable = false;
+	blendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	// 各ブレンドモードの設定をswitch文で行う
+	switch (blendMode) {
+
+		// ブレンド無し
+	case BlendMode::kBlendModeNone:
+
+		blendDesc.BlendEnable = false;
+
+		break;
+
+		// 通常αブレンド
+	case BlendMode::kBlendModeNormal:
+
+		blendDesc.BlendEnable = true;
+		blendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+
+		break;
+
+		// 加算
+	case BlendMode::kBlendModeAdd:
+
+		blendDesc.BlendEnable = true;
+		blendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.DestBlend = D3D12_BLEND_ONE;
+		blendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+
+		break;
+
+		// 減算
+	case BlendMode::kBlendModeSubtract:
+
+		blendDesc.BlendEnable = true;
+		blendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.DestBlend = D3D12_BLEND_ONE;
+		blendDesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
+		blendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+
+		break;
+
+		// 乗算
+	case BlendMode::kBlendModeMultiply:
+
+		blendDesc.BlendEnable = true;
+		blendDesc.SrcBlend = D3D12_BLEND_ZERO;
+		blendDesc.DestBlend = D3D12_BLEND_SRC_COLOR;
+		blendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+
+		break;
+
+		// スクリーン
+	case BlendMode::kBlendModeScreen:
+
+		blendDesc.BlendEnable = true;
+		blendDesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
+		blendDesc.DestBlend = D3D12_BLEND_ONE;
+		blendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+
+		break;
+	}
+
+	return blendDesc;
 }

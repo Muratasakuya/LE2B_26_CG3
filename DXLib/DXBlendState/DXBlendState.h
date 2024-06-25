@@ -3,6 +3,9 @@
 // DirectX
 #include "DXInclude.h"
 
+// c++
+#include <array>
+
 /*////////////////////////////////////////////////////////////////////////////////
 *
 *								DXBlendState Class
@@ -17,16 +20,6 @@ public:
 	DXBlendState() {};
 	~DXBlendState() {};
 
-	void Create();
+	D3D12_RENDER_TARGET_BLEND_DESC Create(BlendMode blendMode);
 
-	// getter
-
-	D3D12_BLEND_DESC GetBlendDesc();
-
-private:
-	/*-----------------------------*/
-	///			メンバ変数
-	/*-----------------------------*/
-
-	D3D12_BLEND_DESC blendDesc_{};
 };

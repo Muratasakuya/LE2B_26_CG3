@@ -82,7 +82,7 @@ void Object2D::Update(Camera2D* camera) {
 /*////////////////////////////////////////////////////////////////////////////////
 *								    描画処理
 ////////////////////////////////////////////////////////////////////////////////*/
-void Object2D::Draw(const std::string textureName) {
+void Object2D::Draw(const std::string textureName, BlendMode blendMode) {
 
-	Engine::DrawSprite(cBuffer_.get(), Texture, textureName);
+	Engine::DrawSprite(cBuffer_.get(), textureName, Texture, blendMode);
 }

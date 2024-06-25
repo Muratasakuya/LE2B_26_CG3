@@ -24,7 +24,7 @@ public:
 
 	void Update(Camera3D* camera);
 
-	void Draw(PipelineType pipelineType, const std::string& textureName, const std::optional<std::string>& modelName = std::nullopt);
+	void Draw(PipelineType pipelineType, BlendMode blendMode, const std::string& textureName, const std::optional<std::string>& modelName = std::nullopt);
 
 private:
 	/*-----------------------------*/

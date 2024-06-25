@@ -24,6 +24,6 @@ public:
 
 	void Update(Camera2D* camera);
 
-	void Draw(const std::string textureName);
+	void Draw(const std::string textureName,BlendMode blendMode);
 
 };

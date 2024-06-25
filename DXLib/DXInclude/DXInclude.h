@@ -21,5 +21,19 @@ enum PipelineType {
 	Texture,       // テクスチャ使用 Lightingの有無あり
 };
 
+// ブレンドモード
+enum BlendMode {
+
+	kBlendModeNone,     // ブレンド無し
+	kBlendModeNormal,   // 通常αブレンド
+	kBlendModeAdd,      // 加算
+	kBlendModeSubtract, // 減算
+	kBlendModeMultiply,  // 乗算
+	kBlendModeScreen,   // スクリーン
+};
+
 // パイプラインタイプの数
 static const uint32_t pipelineTypeNum = 2;
+
+// ブレンドモードの数
+static const uint32_t blendModeNum = 6;

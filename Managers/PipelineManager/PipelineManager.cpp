@@ -134,7 +134,8 @@ void PipelineManager::ShaderCompile(
 ////////////////////////////////////////////////////////////////////////////////*/
 void PipelineManager::CreatePipelineState(
 	DXCommon* dxCommon, IDxcBlob* vs, IDxcBlob* ps, ID3D12RootSignature* rootSigature, D3D12_INPUT_LAYOUT_DESC inputLayout,
-	D3D12_BLEND_DESC blendDesc, D3D12_RASTERIZER_DESC rasterizerDesc, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, PipelineType pipelineType) {
+	D3D12_RENDER_TARGET_BLEND_DESC blendDesc, D3D12_RASTERIZER_DESC rasterizerDesc, D3D12_DEPTH_STENCIL_DESC depthStencilDesc,
+	PipelineType pipelineType, BlendMode blendMode) {
 
 	HRESULT hr;
 
@@ -143,7 +144,7 @@ void PipelineManager::CreatePipelineState(
 	graphicsPipelineStateDesc_.InputLayout = inputLayout;
 	graphicsPipelineStateDesc_.VS = { vs->GetBufferPointer(),vs->GetBufferSize() };
 	graphicsPipelineStateDesc_.PS = { ps->GetBufferPointer(),ps->GetBufferSize() };
-	graphicsPipelineStateDesc_.BlendState = blendDesc;
+	graphicsPipelineStateDesc_.BlendState.RenderTarget[0] = blendDesc;
 	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc;
 	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc;
 	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -158,10 +159,10 @@ void PipelineManager::CreatePipelineState(
 	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	// 実際に生成
-	pipelineState_[pipelineType] = nullptr;
+	pipelineStates_[pipelineType][blendMode] = nullptr;
 	hr = dxCommon->GetDevice()->CreateGraphicsPipelineState(
 		&graphicsPipelineStateDesc_,
-		IID_PPV_ARGS(&pipelineState_[pipelineType]));
+		IID_PPV_ARGS(&pipelineStates_[pipelineType][blendMode]));
 	assert(SUCCEEDED(hr));
 }
 
@@ -176,37 +177,42 @@ void PipelineManager::CreatePipelineStateObject(DXCommon* dxCommon) {
 
 	rootSignature_ = std::make_unique<DXRootSignature>();
 	inputLayout_ = std::make_unique<DXInputLayout>();
-	blendState_ = std::make_unique<DXBlendState>();
 	rasterizerState_ = std::make_unique<DXRasterizerState>();
 	depthStencil_ = std::make_unique<DXDepthStencil>();
 
 	// パイプラインの名前
 	pipelineTypes_ = { Primitive, Texture };
 
-	for (PipelineType type : pipelineTypes_) {
+	// ブレンドモードの名前
+	blendModeTypes = { kBlendModeNone ,kBlendModeNormal ,kBlendModeAdd ,kBlendModeSubtract ,kBlendModeMultiply ,kBlendModeScreen };
 
-		// RootSignature
-		rootSignature_->Create(dxCommon, type);
+	for (PipelineType pipelineType : pipelineTypes_) {
+		for (BlendMode blendType : blendModeTypes) {
 
-		// InputLayout
-		inputLayout_->Create(type);
+			// RootSignature
+			rootSignature_->Create(dxCommon, pipelineType);
 
-		// BlendState
-		blendState_->Create();
+			// InputLayout
+			inputLayout_->Create(pipelineType);
 
-		// RasterizerState
-		rasterizerState_->Create();
+			// BlendState
+			D3D12_RENDER_TARGET_BLEND_DESC blendState = blendState_.Create(blendType);
 
-		// depthStencil
-		depthStencil_->Create(true);
+			// RasterizerState
+			rasterizerState_->Create();
 
-		// ShaderCompile
-		ShaderCompile(dxCommon, type);
+			// depthStencil
+			depthStencil_->Create(true);
 
-		// PipelineState
-		CreatePipelineState(
-			dxCommon, vsBlob_[type].Get(), psBlob_[type].Get(), rootSignature_->GetRootSignature(type), inputLayout_->GetInputLayoutDesc(type),
-			blendState_->GetBlendDesc(), rasterizerState_->GetRasterizerDesc(), depthStencil_->GetDepthStencilDesc(), type);
+			// ShaderCompile
+			ShaderCompile(dxCommon, pipelineType);
+
+			// PipelineState
+			CreatePipelineState(
+				dxCommon, vsBlob_[pipelineType].Get(), psBlob_[pipelineType].Get(), rootSignature_->GetRootSignature(pipelineType), inputLayout_->GetInputLayoutDesc(pipelineType),
+				blendState, rasterizerState_->GetRasterizerDesc(), depthStencil_->GetDepthStencilDesc(),
+				pipelineType, blendType);
+		}
 	}
 }
 
@@ -218,11 +224,11 @@ void PipelineManager::CreatePipelineStateObject(DXCommon* dxCommon) {
 
 ////////////////////////////////////////////////////////////////////////////////*/
 void PipelineManager::SetGraphicsPipeline(
-	ID3D12GraphicsCommandList* commandList, PipelineType pipeType) {
+	ID3D12GraphicsCommandList* commandList, PipelineType pipelineType, BlendMode blendMode) {
 
 	// RootSignatureの設定
-	commandList->SetGraphicsRootSignature(rootSignature_->GetRootSignature(pipeType));
+	commandList->SetGraphicsRootSignature(rootSignature_->GetRootSignature(pipelineType));
 
 	// PipelineStateの設定
-	commandList->SetPipelineState(pipelineState_[pipeType].Get());
+	commandList->SetPipelineState(pipelineStates_[pipelineType][blendMode].Get());
 }

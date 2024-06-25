@@ -91,6 +91,8 @@ private:
 
 	// 描画タイプ
 	PipelineType planeDrawType_;
+	// ブレンドモード
+	BlendMode planeBlendMode_;
 
 	// モデルの名前
 	std::string planeModelName_;

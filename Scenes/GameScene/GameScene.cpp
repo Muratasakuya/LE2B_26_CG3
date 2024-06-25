@@ -30,64 +30,12 @@ GameScene::GameScene() {
 
 	/*======================================================*/
 	// 2Dオブジェクト
+	
 
-	/*------------------------------------------------------*/
-	// スプライト
-
-	// 生成
-	sprite_ = std::make_unique<Object2D>();
-
-	// 初期化
-	sprite_->Initilize(camera2D_.get());
-
-	// テクスチャ読み込み
-	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
-	spriteTextureName_ = "uvChecker";
 
 	/*======================================================*/
 	// 3Dオブジェクト
-
-	/*------------------------------------------------------*/
-	// 三角形
-
-	// 生成
-	for (auto& triangle : triangles_) {
-
-		triangle = std::make_unique<Object3D>(Object3DType::Triangle);
-
-		triangle->SetEnableLighting(false);
-		triangle->SetEnableHalfLambert(false);
-		triangle->Initilize(camera3D_.get());
-	}
-
-	// ずらして描画
-	triangles_[0]->SetRotate({ 0.0f,std::numbers::pi_v<float> / 3.0f,0.0f });
-
-	// 描画タイプ
-	triangleDrawType_ = Texture;
-
-	// テクスチャ読み込み
-	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
-	triangleTextureName_ = "uvChecker";
-
-	/*------------------------------------------------------*/
-	// 球
-
-	// 生成
-	sphere_ = std::make_unique<Object3D>(Object3DType::Sphere);
-
-	// 初期化
-	sphere_->SetEnableLighting(true);
-	sphere_->SetEnableHalfLambert(true);
-	sphere_->Initilize(camera3D_.get());
-
-	// 描画タイプ
-	sphereDrawType_ = Texture;
-
-	// テクスチャ読み込み
-	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
-	sphereTextureName_ = "uvChecker";
-
+	
 	/*------------------------------------------------------*/
 	// モデル plane
 
@@ -95,7 +43,7 @@ GameScene::GameScene() {
 	plane_ = std::make_unique<Object3D>(Object3DType::Model);
 
 	// 初期化
-	plane_->SetEnableLighting(true);
+	plane_->SetEnableLighting(false);
 	plane_->SetEnableHalfLambert(true);
 	plane_->Initilize(camera3D_.get());
 
@@ -104,6 +52,8 @@ GameScene::GameScene() {
 
 	// 描画タイプ
 	planeDrawType_ = Texture;
+	// ブレンドモード
+	planeBlendMode_ = kBlendModeNone;
 
 	// テクスチャ読み込み
 	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
@@ -139,20 +89,10 @@ void GameScene::Initialize() {
 	/*======================================================*/
 	// 2Dオブジェクト
 
-	// スプライト
-	sprite_->Initilize(camera2D_.get());
+
 
 	/*======================================================*/
 	// 3Dオブジェクト
-
-	// 三角形
-	for (const auto& triangle : triangles_) {
-
-		triangle->Initilize(camera3D_.get());
-	}
-
-	// 球
-	sphere_->Initilize(camera3D_.get());
 
 	// plane
 	plane_->Initilize(camera3D_.get());
@@ -179,20 +119,33 @@ void GameScene::Update() {
 	/*======================================================*/
 	// 2Dオブジェクト
 
-	// スプライト
-	//sprite_->Update(camera2D_.get());
+
 
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// 三角形
-	/*for (const auto& triangle : triangles_) {
+	// BlendModeの文字列配列
+	const char* BlendModeNames[] = {
 
-		triangle->Update(camera3D_.get());
-	}*/
+		"None",
+		"Normal",
+		"Add",
+		"Subtract",
+		"Multiply",
+		"Screen"
+	};
 
-	// 球
-	//sphere_->Update(camera3D_.get());
+	ImGui::Begin("Plane");
+
+	// BlendModeのドロップダウン
+	int currentBlendMode = static_cast<int>(planeBlendMode_);
+
+	if (ImGui::Combo("Blend Mode", &currentBlendMode, BlendModeNames, IM_ARRAYSIZE(BlendModeNames))) {
+
+		planeBlendMode_ = static_cast<BlendMode>(currentBlendMode);
+	}
+
+	ImGui::End();
 
 	// plane
 	plane_->Update(camera3D_.get());
@@ -223,6 +176,6 @@ void GameScene::Draw() {
 	//sphere_->Draw(sphereDrawType_, sphereTextureName_);
 
 	// plane
-	plane_->Draw(planeDrawType_, planeTextureName_, planeModelName_);
+	plane_->Draw(planeDrawType_, planeBlendMode_, planeTextureName_, planeModelName_);
 
 }

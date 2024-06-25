@@ -126,7 +126,7 @@ void Engine::Initialize(uint32_t width, uint32_t height) {
 /// 描画関数
 
 // 三角形
-void Engine::DrawTriangle(const CBufferData* cBufferData, PipelineType pipelineType, const std::string textureName) {
+void Engine::DrawTriangle(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode) {
 
 	// CommandListをdxCommonClassからもってくる
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
@@ -134,7 +134,7 @@ void Engine::DrawTriangle(const CBufferData* cBufferData, PipelineType pipelineT
 	// 頂点バッファへデータ転送
 	mesh_->VertexBufferMemcpy();
 	// パイプラインのセット
-	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType);
+	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &mesh_->GetTriangle()->vertexBufferView);
 	// マテリアルCBufferの場所を設定
@@ -155,7 +155,7 @@ void Engine::DrawTriangle(const CBufferData* cBufferData, PipelineType pipelineT
 }
 
 // スプライト
-void Engine::DrawSprite(const CBufferData* cBufferData, PipelineType pipelineType, const std::string textureName) {
+void Engine::DrawSprite(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode) {
 
 	// CommandListをdxCommonClassからもってくる
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
@@ -163,7 +163,7 @@ void Engine::DrawSprite(const CBufferData* cBufferData, PipelineType pipelineTyp
 	// 頂点データの作成
 	sprite_->SetSpriteData(sprite_->GetSprite()->data, sprite_->GetSprite()->index);
 	// パイプラインのセット
-	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType);
+	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &sprite_->GetSprite()->vertexBufferView);
 	// インデックスバッファの設定
@@ -184,7 +184,7 @@ void Engine::DrawSprite(const CBufferData* cBufferData, PipelineType pipelineTyp
 }
 
 // 球
-void Engine::DrawSphere(const CBufferData* cBufferData, PipelineType pipelineType, const std::string textureName) {
+void Engine::DrawSphere(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode) {
 
 	// CommandListをdxCommonClassからもってくる
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
@@ -192,7 +192,7 @@ void Engine::DrawSphere(const CBufferData* cBufferData, PipelineType pipelineTyp
 	// 頂点データの作成
 	mesh_->SetSphereData(mesh_->GetSphere()->data, mesh_->GetSphere()->index);
 	// パイプラインのセット
-	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType);
+	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &mesh_->GetSphere()->vertexBufferView);
 	// インデックスバッファの設定
@@ -213,7 +213,7 @@ void Engine::DrawSphere(const CBufferData* cBufferData, PipelineType pipelineTyp
 }
 
 // モデル
-void Engine::DrawModel(const CBufferData* cBufferData, PipelineType pipelineType, const std::string modelName, const std::string textureName) {
+void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode) {
 
 	// CommandListをdxCommonClassからもってくる
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
@@ -221,7 +221,7 @@ void Engine::DrawModel(const CBufferData* cBufferData, PipelineType pipelineType
 	// 頂点バッファへデータ転送
 	modelManger_->VertexBufferMemcpy(modelName);
 	// パイプラインのセット
-	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType);
+	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
 	modelManger_->IASetVertexBuffers(commandList.Get(), modelName);
 	// マテリアルCBufferの場所を設定
