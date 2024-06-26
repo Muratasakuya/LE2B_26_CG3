@@ -9,10 +9,11 @@
 
 // c++
 #include <random>
+#include <list>
 
 class Camera3D;
 
-static const uint32_t instanceMaxCount_ = 10;
+static const uint32_t instanceMaxCount_ = 100;
 
 // Δt
 static const float kDeltaTime = 1.0f / 60.0f;
@@ -44,7 +45,9 @@ private:
 	///			メンバ変数
 	/*-----------------------------*/
 
-	ParticleData particles_[instanceMaxCount_];
+	std::list<ParticleData> particles_;
+	Emitter emitter_{};
+	
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 wvpMatrix_;
 
@@ -63,5 +66,6 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU_{};
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_{};
 
-	ParticleData MakeNewParticle(std::mt19937& randomEngine);
+	ParticleData MakeNewParticle(std::mt19937& randomEngine,const Vector3& translate);
+	std::list<ParticleData> Emit(const Emitter& emitter, std::mt19937& randomEngine);
 };

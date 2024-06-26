@@ -36,6 +36,19 @@ Vector3& Vector3::operator-=(const Vector3& v) {
 	return *this;
 }
 
+// bool
+// 等価演算子 ==
+bool Vector3::operator==(const Vector3& other) const {
+
+	return x == other.x && y == other.y && z == other.z;
+}
+
+// 非等価演算子 !=
+bool Vector3::operator!=(const Vector3& other) const {
+
+	return !(*this == other);
+}
+
 /*-------------------------------------------------------------*/
 /// 関数
 

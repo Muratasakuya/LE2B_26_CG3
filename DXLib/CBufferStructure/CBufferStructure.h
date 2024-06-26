@@ -64,8 +64,15 @@ struct ParticleData {
 	Vector4 color;
 	float lifeTime;
 	float currentTime;
-	float respawnTime;
-	float respawnDelay;
+};
+
+// パーティクルエミッタ構造体
+struct Emitter {
+
+	Transform transform;
+	uint32_t count;
+	float frequency;
+	float frequencyTime;
 };
 
 // 平行光源構造体

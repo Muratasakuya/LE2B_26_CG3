@@ -31,6 +31,13 @@ public:
 	// -=
 	Vector3& operator-=(const Vector3& v);
 
+	// bool
+	// 等価演算子 ==
+	bool operator==(const Vector3& other) const;
+
+	// 非等価演算子 !=
+	bool operator!=(const Vector3& other) const;
+
 	/*-------------------------------------------------------------*/
 	/// 関数
 

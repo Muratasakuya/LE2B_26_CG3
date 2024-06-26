@@ -12,7 +12,7 @@
 
 
 // パーティクル生成関数
-ParticleData Particle::MakeNewParticle(std::mt19937& randomEngine) {
+ParticleData Particle::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate) {
 
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 	std::uniform_real_distribution<float> distColor(-1.0f, 1.0f);
@@ -21,13 +21,29 @@ ParticleData Particle::MakeNewParticle(std::mt19937& randomEngine) {
 	ParticleData particleData;
 	particleData.transform.scale = { 1.0f,1.0f,1.0f };
 	particleData.transform.rotate = { 0.0f,0.0f,0.0f };
-	particleData.transform.translate = { distribution(randomEngine),distribution(randomEngine) ,distribution(randomEngine) };
 	particleData.velocity = { distribution(randomEngine),distribution(randomEngine) ,distribution(randomEngine) };
 	particleData.color = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };
 	particleData.lifeTime = distTime(randomEngine);
 	particleData.currentTime = 0.0f;
 
+	Vector3 randomTranslate = { distribution(randomEngine),distribution(randomEngine) ,distribution(randomEngine) };
+	particleData.transform.translate = translate + randomTranslate;
+
 	return particleData;
+}
+
+// Emitterでパーティクルを生成する関数
+std::list<ParticleData> Particle::Emit(const Emitter& emitter, std::mt19937& randomEngine) {
+
+	std::list<ParticleData> particles;
+
+	for (uint32_t count = 0; count < emitter.count; ++count) {
+
+		particles.push_back(MakeNewParticle(randomEngine, emitter.transform.translate));
+	}
+
+
+	return particles;
 }
 
 
@@ -138,6 +154,18 @@ void Particle::Initialize(Camera3D* camera) {
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
+	// エミッタ情報の初期化
+	emitter_.count = 3;
+	// 0.5秒置きに発生
+	emitter_.frequency = 0.5f;
+	// 発生頻度用の時刻
+	emitter_.frequencyTime = 0.0f;
+
+	//エミッタのSRT
+	emitter_.transform.scale = { 1.0f,1.0f,1.0f };
+	emitter_.transform.rotate = { 0.0f,0.0f,0.0f };
+	emitter_.transform.translate = { 0.0f,0.0f,0.0f };
+
 	// SRT
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.0f,0.0f,0.0f };
@@ -152,6 +180,8 @@ void Particle::Initialize(Camera3D* camera) {
 	//useBillboradの有無
 	useBillboard_ = true;
 
+	particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
+
 	// billboard変換
 	Matrix4x4 backToFrontMatrix = Matrix4x4::MakeYawMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix = Matrix4x4::Multiply(backToFrontMatrix, camera->GetCameraMatrix());
@@ -160,18 +190,14 @@ void Particle::Initialize(Camera3D* camera) {
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
 
-	// アフィン
-	for (uint32_t index = 0; index < instanceMaxCount_; ++index) {
+	for (std::list<ParticleData>::iterator it = particles_.begin(); it != particles_.end(); ++it) {
 
-		particles_[index] = MakeNewParticle(randomEngine);
+		it->transform.scale = transform_.scale;
+		it->transform.rotate = transform_.rotate;
 
-		particles_[index].transform.scale = transform_.scale;
-		particles_[index].transform.rotate = transform_.rotate;
+		Matrix4x4 scaleMatrix = Matrix4x4::MakeScaleMatrix(it->transform.scale);
+		Matrix4x4 translateMatrix = Matrix4x4::MakeTranslateMatrix(it->transform.translate);
 
-		Matrix4x4 scaleMatrix = Matrix4x4::MakeScaleMatrix(particles_[index].transform.scale);
-		Matrix4x4 translateMatrix = Matrix4x4::MakeTranslateMatrix(particles_[index].transform.translate);
-
-		// Matrix
 		if (useBillboard_) {
 
 			worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(billboardMatrix, translateMatrix));
@@ -183,9 +209,10 @@ void Particle::Initialize(Camera3D* camera) {
 		wvpMatrix_ =
 			Matrix4x4::Multiply(worldMatrix_, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
-		cBuffer_->particleMatrix->particleData[index].World = worldMatrix_;
-		cBuffer_->particleMatrix->particleData[index].WVP = wvpMatrix_;
-		cBuffer_->particleMatrix->particleData[index].color = particles_[index].color;
+		// Matrix
+		cBuffer_->particleMatrix->particleData[std::distance(particles_.begin(), it)].World = worldMatrix_;
+		cBuffer_->particleMatrix->particleData[std::distance(particles_.begin(), it)].WVP = wvpMatrix_;
+		cBuffer_->particleMatrix->particleData[std::distance(particles_.begin(), it)].color = it->color;
 	}
 
 	// Material
@@ -201,6 +228,10 @@ void Particle::Initialize(Camera3D* camera) {
 ////////////////////////////////////////////////////////////////////////////////*/
 void Particle::Update(Camera3D* camera) {
 
+	// 乱数の生成
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
 	ImGui::Begin("particle");
 
 	ImGui::ColorEdit4("color", &color_.x);
@@ -209,12 +240,14 @@ void Particle::Update(Camera3D* camera) {
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
 	ImGui::Checkbox("useBillboard", &useBillboard_);
+	ImGui::DragFloat3("EmitterTranslate", &emitter_.transform.translate.x, 0.01f, -100.0f, 100.0f);
+
+	if (ImGui::Button("Add Particle")) {
+
+		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
+	}
 
 	ImGui::End();
-
-	// 乱数の生成
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
 
 	// 描画すべきインスタンス数
 	uint32_t numInstance = 0;
@@ -227,59 +260,68 @@ void Particle::Update(Camera3D* camera) {
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
 
-	// アフィン
-	for (uint32_t index = 0; index < instanceMaxCount_; ++index) {
+	// 時刻を進める
+	emitter_.frequencyTime += kDeltaTime;
 
-		// パーティクルが消えている場合
-		if (particles_[index].lifeTime <= particles_[index].currentTime) {
+	if (emitter_.frequency <= emitter_.frequencyTime) {
 
-			// リスポーンタイマーを進める
-			particles_[index].respawnTime += kDeltaTime;
+		// 発生処理
+		particles_.splice(particles_.end(), Emit(emitter_, randomEngine));
 
-			// リスポーンタイマーが遅延時間を超えた場合
-			if (particles_[index].respawnTime >= particles_[index].respawnDelay) {
+		// 余計に過ぎた時間を加味して頻度計算
+		emitter_.frequencyTime -= emitter_.frequency;
+	}
 
-				// パーティクルを再生成する
-				particles_[index].currentTime = 0.0f;
-				particles_[index].respawnTime = 0.0f;
-				particles_[index] = MakeNewParticle(randomEngine);
+	for (std::list<ParticleData>::iterator it = particles_.begin(); it != particles_.end();) {
+
+		if (numInstance < instanceMaxCount_) {
+
+			if ((*it).lifeTime <= (*it).currentTime) {
+
+				// 生存期間が過ぎたparticleをリストから消す
+				it = particles_.erase(it);
+
+				continue;
 			}
 
-			continue;
+			it->transform.translate += {
+
+				it->velocity.x* kDeltaTime,
+					it->velocity.y* kDeltaTime,
+					it->velocity.z* kDeltaTime
+			};
+
+			// 経過時間を足す
+			it->currentTime += kDeltaTime;
+
+			it->transform.scale = transform_.scale;
+			it->transform.rotate = transform_.rotate;
+
+			Matrix4x4 scaleMatrix = Matrix4x4::MakeScaleMatrix(it->transform.scale);
+			Matrix4x4 translateMatrix = Matrix4x4::MakeTranslateMatrix(it->transform.translate);
+
+			if (useBillboard_) {
+
+				worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(billboardMatrix, translateMatrix));
+			} else {
+
+				worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(Matrix4x4::MakeIdentity4x4(), translateMatrix));
+			}
+
+			wvpMatrix_ = Matrix4x4::Multiply(worldMatrix_, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+
+			float alpha = 1.0f - (it->currentTime / it->lifeTime);
+
+			// Matrix
+			cBuffer_->particleMatrix->particleData[numInstance].World = worldMatrix_;
+			cBuffer_->particleMatrix->particleData[numInstance].WVP = wvpMatrix_;
+			cBuffer_->particleMatrix->particleData[numInstance].color = it->color;
+			cBuffer_->particleMatrix->particleData[numInstance].color.w = alpha;
+
+			++numInstance;
 		}
 
-		particles_[index].transform.translate +=
-		{particles_[index].velocity.x* kDeltaTime, particles_[index].velocity.y* kDeltaTime, particles_[index].velocity.z* kDeltaTime};
-
-		// 経過時間を足す
-		particles_[index].currentTime += kDeltaTime;
-
-		particles_[index].transform.scale = transform_.scale;
-		particles_[index].transform.rotate = transform_.rotate;
-
-		Matrix4x4 scaleMatrix = Matrix4x4::MakeScaleMatrix(particles_[index].transform.scale);
-		Matrix4x4 translateMatrix = Matrix4x4::MakeTranslateMatrix(particles_[index].transform.translate);
-
-		// Matrix
-		if (useBillboard_) {
-
-			worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(billboardMatrix, translateMatrix));
-		} else {
-
-			worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(Matrix4x4::MakeIdentity4x4(), translateMatrix));
-		}
-
-		wvpMatrix_ =
-			Matrix4x4::Multiply(worldMatrix_, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
-
-		float alpha = 1.0f - (particles_[index].currentTime / particles_[index].lifeTime);
-
-		cBuffer_->particleMatrix->particleData[numInstance].World = worldMatrix_;
-		cBuffer_->particleMatrix->particleData[numInstance].WVP = wvpMatrix_;
-		cBuffer_->particleMatrix->particleData[numInstance].color = particles_[index].color;
-		cBuffer_->particleMatrix->particleData[numInstance].color.w = alpha;
-
-		++numInstance;
+		++it;
 	}
 
 	// インスタンス数の更新
