@@ -11,17 +11,38 @@
 
 
 
+// パーティクル生成関数
+ParticleData Particle::MakeNewParticle(std::mt19937& randomEngine) {
+
+	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+	std::uniform_real_distribution<float> distColor(-1.0f, 1.0f);
+	std::uniform_real_distribution<float> distTime(1.0f, 3.0f);
+
+	ParticleData particleData;
+	particleData.transform.scale = { 1.0f,1.0f,1.0f };
+	particleData.transform.rotate = { 0.0f,0.0f,0.0f };
+	particleData.transform.translate = { distribution(randomEngine),distribution(randomEngine) ,distribution(randomEngine) };
+	particleData.velocity = { distribution(randomEngine),distribution(randomEngine) ,distribution(randomEngine) };
+	particleData.color = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };
+	particleData.lifeTime = distTime(randomEngine);
+	particleData.currentTime = 0.0f;
+
+	return particleData;
+}
+
+
+
 /*////////////////////////////////////////////////////////////////////////////////
 *								コンストラクタ
 ////////////////////////////////////////////////////////////////////////////////*/
-Particle::Particle() {
+Particle::Particle(Camera3D* camera) {
 
 	vertexResource_ = std::make_unique<VertexResource>();
 	cBuffer_ = std::make_unique<CBufferData>();
 
 	// CBufferの作成
 	cBuffer_->material = vertexResource_->CreateMaterial();
-	cBuffer_->matrix = vertexResource_->CreateParticleWVP(instanceCount_);
+	cBuffer_->particleMatrix = vertexResource_->CreateParticleWVP(instanceMaxCount_);
 
 	// srvDescの初期化
 	InitializeDXSrvDesc();
@@ -55,15 +76,17 @@ Particle::Particle() {
 	// モデルの名前
 	modelName_ = "particle";
 	// テクスチャの名前
-	textureName_ = "uvChecker";
+	textureName_ = "circle";
 
 	// ブレンドモード
-	blendMode_ = kBlendModeNormal;
+	blendMode_ = kBlendModeAdd;
 
 	// 自作モデルデータの作成
 	ModelManager::GetInstance()->MakeModel(modelData_, "particle");
 	// テクスチャの読み込み
-	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
+	TextureManager::GetInstance()->LoadTexture("./Resources/Images/circle.png");
+
+	Initialize(camera);
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -88,8 +111,8 @@ void Particle::InitializeDXSrvDesc() {
 	instancingSrvDesc_.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	instancingSrvDesc_.Buffer.FirstElement = 0;
 	instancingSrvDesc_.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	instancingSrvDesc_.Buffer.NumElements = instanceCount_;
-	instancingSrvDesc_.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+	instancingSrvDesc_.Buffer.NumElements = instanceMaxCount_;
+	instancingSrvDesc_.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 
 	UINT descriptorSize = DXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
@@ -101,7 +124,7 @@ void Particle::InitializeDXSrvDesc() {
 			DXCommon::GetInstance()->GetSRVDescriptorHeap(), descriptorSize, 2);
 
 	DXCommon::GetInstance()->GetDevice()
-		->CreateShaderResourceView(cBuffer_->matrix->resource.Get(), &instancingSrvDesc_, instancingSrvHandleCPU_);
+		->CreateShaderResourceView(cBuffer_->particleMatrix->resource.Get(), &instancingSrvDesc_, instancingSrvHandleCPU_);
 }
 
 
@@ -110,6 +133,12 @@ void Particle::InitializeDXSrvDesc() {
 *									初期化
 ////////////////////////////////////////////////////////////////////////////////*/
 void Particle::Initialize(Camera3D* camera) {
+
+	// 乱数の生成
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
+	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 
 	// SRT
 	transform_.scale = { 1.0f,1.0f,1.0f };
@@ -123,25 +152,25 @@ void Particle::Initialize(Camera3D* camera) {
 	lightDirection_ = { 0.0f,-1.0f,0.0f };
 
 	// アフィン
-	for (uint32_t index = 0; index < instanceCount_; ++index) {
+	for (uint32_t index = 0; index < instanceMaxCount_; ++index) {
 
-		transforms_[index].scale = transform_.scale;
-		transforms_[index].rotate = transform_.rotate;
-		transforms_[index].translate =
-		{ transform_.translate.x + index * 0.1f,transform_.translate.y + index * 0.1f,transform_.translate.z + index * 0.1f };
+		particles_[index] = MakeNewParticle(randomEngine);
+
+		particles_[index].transform.scale = transform_.scale;
+		particles_[index].transform.rotate = transform_.rotate;
 
 		// Matrix
 		Matrix4x4 worldMatrix =
-			Matrix4x4::MakeAffineMatrix(transforms_[index].scale, transforms_[index].rotate, transforms_[index].translate);
+			Matrix4x4::MakeAffineMatrix(particles_[index].transform.scale, particles_[index].transform.rotate, particles_[index].transform.translate);
 		Matrix4x4 wvpMatrix =
 			Matrix4x4::Multiply(worldMatrix, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
-		cBuffer_->matrix->data[index].World = worldMatrix;
-		cBuffer_->matrix->data[index].WVP = wvpMatrix;
+		cBuffer_->particleMatrix->particleData[index].World = worldMatrix;
+		cBuffer_->particleMatrix->particleData[index].WVP = wvpMatrix;
+		cBuffer_->particleMatrix->particleData[index].color = particles_[index].color;
 	}
 
 	// Material
-	cBuffer_->material->data->color = color_;
 	cBuffer_->material->data->enableLighting = false;
 	cBuffer_->material->data->enableHalfLambert = false;
 	cBuffer_->material->data->uvTransform = Matrix4x4::MakeIdentity4x4();
@@ -161,27 +190,46 @@ void Particle::Update(Camera3D* camera) {
 	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
-	ImGui::SliderFloat3("translate", &transform_.translate.x, -5.0f, 5.0f);
 
 	ImGui::End();
 
-	// アフィン
-	for (uint32_t index = 0; index < instanceCount_; ++index) {
+	// 描画すべきインスタンス数
+	uint32_t numInstance = 0;
 
-		transforms_[index].scale = transform_.scale;
-		transforms_[index].rotate = transform_.rotate;
-		transforms_[index].translate =
-		{ transform_.translate.x + index * 0.1f,transform_.translate.y + index * 0.1f,transform_.translate.z + index * 0.1f };
+	// アフィン
+	for (uint32_t index = 0; index < instanceMaxCount_; ++index) {
+
+		if (particles_[index].lifeTime <= particles_[index].currentTime) {
+
+			continue;
+		}
+
+		particles_[index].transform.translate +=
+		{particles_[index].velocity.x* kDeltaTime, particles_[index].velocity.y* kDeltaTime, particles_[index].velocity.z* kDeltaTime};
+
+		// 経過時間を足す
+		particles_[index].currentTime += kDeltaTime;
+
+		particles_[index].transform.scale = transform_.scale;
+		particles_[index].transform.rotate = transform_.rotate;
 
 		// Matrix
 		Matrix4x4 worldMatrix =
-			Matrix4x4::MakeAffineMatrix(transforms_[index].scale, transforms_[index].rotate, transforms_[index].translate);
+			Matrix4x4::MakeAffineMatrix(particles_[index].transform.scale, particles_[index].transform.rotate, particles_[index].transform.translate);
 		Matrix4x4 wvpMatrix =
 			Matrix4x4::Multiply(worldMatrix, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
-		cBuffer_->matrix->data[index].World = worldMatrix;
-		cBuffer_->matrix->data[index].WVP = wvpMatrix;
+		float alpha = 1.0f - (particles_[index].currentTime / particles_[index].lifeTime);
+
+		cBuffer_->particleMatrix->particleData[numInstance].World = worldMatrix;
+		cBuffer_->particleMatrix->particleData[numInstance].WVP = wvpMatrix;
+		cBuffer_->particleMatrix->particleData[numInstance].color = particles_[index].color;
+		cBuffer_->particleMatrix->particleData[numInstance].color.w = alpha;
+
+		++numInstance;
 	}
+
+	numInstance_ = numInstance;
 
 	// Material
 	cBuffer_->material->data->color = color_;
@@ -197,6 +245,6 @@ void Particle::Update(Camera3D* camera) {
 void Particle::Draw() {
 
 	Engine::DrawParticle(
-		cBuffer_.get(), static_cast<UINT>(modelData_.vertices.size()), instanceCount_, instancingSrvHandleGPU_,
+		cBuffer_.get(), static_cast<UINT>(modelData_.vertices.size()), numInstance_, instancingSrvHandleGPU_,
 		modelName_, textureName_, pParticle, blendMode_);
 }

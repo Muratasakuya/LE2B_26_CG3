@@ -15,6 +15,14 @@
 #include <memory>
 #include <string>
 
+// Transform構造体
+struct Transform {
+
+	Vector3 scale;
+	Vector3 rotate;
+	Vector3 translate;
+};
+
 // 頂点データ構造体
 struct VertexData {
 
@@ -40,6 +48,24 @@ struct TransformationMatrix {
 	Matrix4x4 WVP;
 };
 
+// パーティクル用のMatrix構造体
+struct ParticleForGPU {
+
+	Matrix4x4 World;
+	Matrix4x4 WVP;
+	Vector4 color;
+};
+
+// パーティクル用構造体
+struct ParticleData {
+
+	Transform transform;
+	Vector3 velocity;
+	Vector4 color;
+	float lifeTime;
+	float currentTime;
+};
+
 // 平行光源構造体
 struct DirectionalLight {
 
@@ -50,7 +76,7 @@ struct DirectionalLight {
 
 // モデルマテリアルデータ構造体
 struct ModelMaterialData {
-	
+
 	std::string textureFilePath;
 };
 
@@ -81,6 +107,15 @@ struct CBTransformData {
 	TransformationMatrix* data = nullptr;
 };
 
+//CBパーティクル用トランスフォームデータ
+struct CBParticleTransformData {
+
+	// WVP
+	ComPtr<ID3D12Resource> resource;
+
+	ParticleForGPU* particleData = nullptr;
+};
+
 // CBライトデータ
 struct CBLightData {
 
@@ -96,5 +131,6 @@ struct CBufferData {
 
 	std::unique_ptr<CBMaterialData> material;
 	std::unique_ptr<CBTransformData> matrix;
+	std::unique_ptr<CBParticleTransformData> particleMatrix;
 	std::unique_ptr<CBLightData> light;
 };

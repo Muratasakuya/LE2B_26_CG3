@@ -1,4 +1,4 @@
-#include "Object3D.hlsli"
+#include "Particle.hlsli"
 
 /*===========================================================
                      Particle PS Shader
@@ -38,8 +38,8 @@ PixelShaderOutput main(VertexShaderOutput input)
         discard;
     }
     
-    output.color.rgb = gMaterial.color.rgb * textureColor.rgb;
-    output.color.a = gMaterial.color.a * textureColor.a;
+    output.color.rgb = gMaterial.color.rgb * textureColor.rgb * input.color.rgb;
+    output.color.a = gMaterial.color.a * textureColor.a * input.color.a;
     
     return output;
 }

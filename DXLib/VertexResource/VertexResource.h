@@ -25,7 +25,7 @@ public:
 	std::unique_ptr<CBTransformData> CreateWVP();
 
 	// パーティクル用WVP生成
-	std::unique_ptr<CBTransformData> CreateParticleWVP(const uint32_t instanceNum);
+	std::unique_ptr<CBParticleTransformData> CreateParticleWVP(const uint32_t instanceNum);
 
 	// Light生成
 	std::unique_ptr<CBLightData> CreateLight();

@@ -65,9 +65,9 @@ void DXInputLayout::Create(PipelineType pipelineType) {
 		textureInputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 		textureInputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
-		textureInputElementDescs[2].SemanticName = "NORMAL";
+		textureInputElementDescs[2].SemanticName = "COLOR";
 		textureInputElementDescs[2].SemanticIndex = 0;
-		textureInputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		textureInputElementDescs[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		textureInputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 		inputLayoutDesc_[pipelineType] = {};

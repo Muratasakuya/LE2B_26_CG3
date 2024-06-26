@@ -98,24 +98,25 @@ std::unique_ptr<CBTransformData> VertexResource::CreateWVP() {
 *							 パーティクル用WVPの生成
 
 ////////////////////////////////////////////////////////////////////////////////*/
-std::unique_ptr<CBTransformData> VertexResource::CreateParticleWVP(const uint32_t instanceNum) {
+std::unique_ptr<CBParticleTransformData> VertexResource::CreateParticleWVP(const uint32_t instanceNum) {
 
 	DXCommon* dxCommon = DXCommon::GetInstance();
 
 	HRESULT hr;
-	std::unique_ptr<CBTransformData> matrix = std::make_unique<CBTransformData>();
+	std::unique_ptr<CBParticleTransformData> matrix = std::make_unique<CBParticleTransformData>();
 
 	// WVPの生成
-	matrix->resource = CreateBufferResource(dxCommon->GetDevice(), sizeof(TransformationMatrix) * instanceNum);
+	matrix->resource = CreateBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * instanceNum);
 
 	// WVPデータのマッピング
-	hr = matrix->resource->Map(0, nullptr, reinterpret_cast<void**>(&matrix->data));
+	hr = matrix->resource->Map(0, nullptr, reinterpret_cast<void**>(&matrix->particleData));
 
 	// 単位行列を書き込んでおく
 	for (size_t index = 0; index < instanceNum; index++) {
 
-		matrix->data[index].World = Matrix4x4::MakeIdentity4x4();
-		matrix->data[index].WVP = Matrix4x4::MakeIdentity4x4();
+		matrix->particleData[index].World = Matrix4x4::MakeIdentity4x4();
+		matrix->particleData[index].WVP = Matrix4x4::MakeIdentity4x4();
+		matrix->particleData[index].color = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
 	// 作れなければエラー

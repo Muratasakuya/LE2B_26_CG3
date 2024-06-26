@@ -2,13 +2,20 @@
 
 // DirectX
 #include "DXInclude.h"
+#include "cBufferStructure.h"
 
 // Base
 #include "Object.h"
 
+// c++
+#include <random>
+
 class Camera3D;
 
-static const uint32_t instanceCount_ = 10;;
+static const uint32_t instanceMaxCount_ = 10;
+
+// Δt
+static const float kDeltaTime = 1.0f / 60.0f;
 
 /*////////////////////////////////////////////////////////////////////////////////
 *
@@ -22,7 +29,7 @@ public:
 	///			メンバ関数
 	/*-----------------------------*/
 
-	Particle();
+	Particle(Camera3D* camera);
 	~Particle();
 
 	void Initialize(Camera3D* camera);
@@ -37,7 +44,9 @@ private:
 	///			メンバ変数
 	/*-----------------------------*/
 
-	Transform transforms_[instanceCount_];
+	ParticleData particles_[instanceMaxCount_];
+
+	uint32_t numInstance_ = 0;
 
 	ModelData modelData_;
 
@@ -49,4 +58,6 @@ private:
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc_{};
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU_{};
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_{};
+
+	ParticleData MakeNewParticle(std::mt19937& randomEngine);
 };

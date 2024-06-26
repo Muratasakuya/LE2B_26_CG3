@@ -67,7 +67,7 @@ GameScene::GameScene() {
 	// パーティクル
 
 	// 生成
-	particle_ = std::make_unique<Particle>();
+	particle_ = std::make_unique<Particle>(camera3D_.get());
 
 	// 初期化
 	particle_->Initialize(camera3D_.get());

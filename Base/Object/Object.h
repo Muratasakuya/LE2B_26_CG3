@@ -11,14 +11,6 @@
 #include <optional>
 #include <numbers>
 
-// Transform構造体
-struct Transform {
-
-	Vector3 scale;
-	Vector3 rotate;
-	Vector3 translate;
-};
-
 // オブジェクトタイプ
 enum class Object3DType {
 

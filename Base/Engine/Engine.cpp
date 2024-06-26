@@ -261,7 +261,7 @@ void Engine::DrawParticle(
 	// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->particleMatrix->resource->GetGPUVirtualAddress());
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
 	// instacning
