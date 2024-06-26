@@ -111,6 +111,11 @@ void Particle::InitializeDXSrvDesc() {
 ////////////////////////////////////////////////////////////////////////////////*/
 void Particle::Initialize(Camera3D* camera) {
 
+	// SRT
+	transform_.scale = { 1.0f,1.0f,1.0f };
+	transform_.rotate = { 0.0f,0.0f,0.0f };
+	transform_.translate = { 0.0f,0.0f,0.0f };
+
 	// 色
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
 
@@ -120,9 +125,10 @@ void Particle::Initialize(Camera3D* camera) {
 	// アフィン
 	for (uint32_t index = 0; index < instanceCount_; ++index) {
 
-		transforms_[index].scale = { 1.0f,1.0f,1.0f };
-		transforms_[index].rotate = { 0.0f,0.0f,0.0f };
-		transforms_[index].translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+		transforms_[index].scale = transform_.scale;
+		transforms_[index].rotate = transform_.rotate;
+		transforms_[index].translate =
+		{ transform_.translate.x + index * 0.1f,transform_.translate.y + index * 0.1f,transform_.translate.z + index * 0.1f };
 
 		// Matrix
 		Matrix4x4 worldMatrix =
@@ -148,12 +154,24 @@ void Particle::Initialize(Camera3D* camera) {
 ////////////////////////////////////////////////////////////////////////////////*/
 void Particle::Update(Camera3D* camera) {
 
+	ImGui::Begin("particle");
+
+	ImGui::ColorEdit4("color", &color_.x);
+	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 1.0f);
+	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
+	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
+	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
+	ImGui::SliderFloat3("translate", &transform_.translate.x, -5.0f, 5.0f);
+
+	ImGui::End();
+
 	// アフィン
 	for (uint32_t index = 0; index < instanceCount_; ++index) {
 
-		transforms_[index].scale = { 1.0f,1.0f,1.0f };
-		transforms_[index].rotate = { 0.0f,0.0f,0.0f };
-		transforms_[index].translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+		transforms_[index].scale = transform_.scale;
+		transforms_[index].rotate = transform_.rotate;
+		transforms_[index].translate =
+		{ transform_.translate.x + index * 0.1f,transform_.translate.y + index * 0.1f,transform_.translate.z + index * 0.1f };
 
 		// Matrix
 		Matrix4x4 worldMatrix =
