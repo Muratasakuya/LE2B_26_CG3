@@ -75,6 +75,20 @@ struct Emitter {
 	float frequencyTime;
 };
 
+// AABB構造体
+struct AABB {
+
+	Vector3 min;
+	Vector3 max;
+};
+
+// 加速フィールド構造体
+struct AccelerationField {
+
+	Vector3 acceleration;
+	AABB area;
+};
+
 // 平行光源構造体
 struct DirectionalLight {
 

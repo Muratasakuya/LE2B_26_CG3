@@ -46,6 +46,19 @@ std::list<ParticleData> Particle::Emit(const Emitter& emitter, std::mt19937& ran
 	return particles;
 }
 
+// 衝突判定
+bool Particle::IsCollision(const AABB& aabb, const Vector3& point) {
+
+	// ポイントがAABBの範囲内にあるかをチェック
+	if ((point.x >= aabb.min.x && point.x <= aabb.max.x) &&
+		(point.y >= aabb.min.y && point.y <= aabb.max.y) &&
+		(point.z >= aabb.min.z && point.z <= aabb.max.z)) {
+
+		return true;
+	}
+	return false;
+}
+
 
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -166,6 +179,11 @@ void Particle::Initialize(Camera3D* camera) {
 	emitter_.transform.rotate = { 0.0f,0.0f,0.0f };
 	emitter_.transform.translate = { 0.0f,0.0f,0.0f };
 
+	// 加速フィールドの初期化
+	accelerationField_.acceleration = { 15.0f,0.0f,0.0f };
+	accelerationField_.area.min = { -1.0f,-1.0f,-1.0f };
+	accelerationField_.area.max = { 1.0f,1.0f,1.0f };
+
 	// SRT
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.0f,0.0f,0.0f };
@@ -284,6 +302,16 @@ void Particle::Update(Camera3D* camera) {
 				continue;
 			}
 
+			// 衝突判定していたら加速させる
+			if (IsCollision(accelerationField_.area, it->transform.translate)) {
+
+				it->velocity +=
+				{accelerationField_.acceleration.x* kDeltaTime,
+					accelerationField_.acceleration.y* kDeltaTime,
+					accelerationField_.acceleration.z* kDeltaTime};
+			}
+
+			// 速度を適用
 			it->transform.translate += {
 
 				it->velocity.x* kDeltaTime,

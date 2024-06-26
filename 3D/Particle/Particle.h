@@ -47,6 +47,7 @@ private:
 
 	std::list<ParticleData> particles_;
 	Emitter emitter_{};
+	AccelerationField accelerationField_;
 	
 	Matrix4x4 worldMatrix_;
 	Matrix4x4 wvpMatrix_;
@@ -68,4 +69,6 @@ private:
 
 	ParticleData MakeNewParticle(std::mt19937& randomEngine,const Vector3& translate);
 	std::list<ParticleData> Emit(const Emitter& emitter, std::mt19937& randomEngine);
+
+	bool IsCollision(const AABB& aabb, const Vector3& point);
 };
