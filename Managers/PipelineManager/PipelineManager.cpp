@@ -119,6 +119,12 @@ void PipelineManager::ShaderCompile(
 	// 各タイプのシェーダーコンパイル
 	if (pipelineType == Primitive) {
 
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
+		//												Primitive Shader
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
 		// 頂点シェーダ
 		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Primitive.VS.hlsl", L"vs_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
@@ -128,7 +134,13 @@ void PipelineManager::ShaderCompile(
 		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Primitive.PS.hlsl", L"ps_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
 		assert(psBlob_[pipelineType] != nullptr);
-	} else if (pipelineType == Texture) {
+	} else if (pipelineType == Texture ) {
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
+		//												 Object3D Shader
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
 
 		// 頂点シェーダ
 		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Object3D.VS.hlsl", L"vs_6_0",
@@ -141,6 +153,12 @@ void PipelineManager::ShaderCompile(
 		assert(psBlob_[pipelineType] != nullptr);
 	} else if (pipelineType == pParticle) {
 
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
+		//												  Particle Shader
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
 		// 頂点シェーダ
 		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Particle.VS.hlsl", L"vs_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
@@ -148,6 +166,23 @@ void PipelineManager::ShaderCompile(
 
 		// ピクセルシェーダ
 		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Particle.PS.hlsl", L"ps_6_0",
+			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
+		assert(psBlob_[pipelineType] != nullptr);
+	} else if (pipelineType == PhongReflection) {
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
+		//											    PhongReflection Shader
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
+		// 頂点シェーダ
+		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/PhongReflection.VS.hlsl", L"vs_6_0",
+			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
+		assert(vsBlob_[pipelineType] != nullptr);
+
+		// ピクセルシェーダ
+		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/PhongReflection.PS.hlsl", L"ps_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
 		assert(psBlob_[pipelineType] != nullptr);
 	}
@@ -209,7 +244,7 @@ void PipelineManager::CreatePipelineStateObject(DXCommon* dxCommon) {
 	depthStencil_ = std::make_unique<DXDepthStencil>();
 
 	// パイプラインの名前
-	pipelineTypes_ = { Primitive, Texture, pParticle };
+	pipelineTypes_ = { Primitive, Texture, pParticle, PhongReflection };
 
 	// ブレンドモードの名前
 	blendModeTypes = { kBlendModeNone ,kBlendModeNormal ,kBlendModeAdd ,kBlendModeSubtract ,kBlendModeMultiply ,kBlendModeScreen };

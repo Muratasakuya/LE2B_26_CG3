@@ -23,6 +23,7 @@ public:
 
 	// getter
 
+	Vector3 GetWorldPos() const;
 	Matrix4x4 GetCameraMatrix() const;
 	Matrix4x4 GetViewMatrix() const;
 	Matrix4x4 GetProjectionMatrix() const;

@@ -13,6 +13,12 @@ void Object::SetEnableHalfLambert(bool enableHalfLambert) {
 	enableHalfLambert_ = enableHalfLambert;
 }
 
+// enablePhongReflection_ = enablePhongReflection setter
+void Object::SetEnablePhongReflection(bool enablePhongReflection) {
+
+	enablePhongReflection_ = enablePhongReflection;
+}
+
 // transform_.scale = scale setter
 void Object::SetScale(Vector3 scale) {
 

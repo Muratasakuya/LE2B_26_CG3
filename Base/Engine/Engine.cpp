@@ -202,13 +202,19 @@ void Engine::DrawSphere(const CBufferData* cBufferData, const std::string textur
 	commandList->IASetVertexBuffers(0, 1, &mesh_->GetSphere()->vertexBufferView);
 	// インデックスバッファの設定
 	commandList->IASetIndexBuffer(&mesh_->GetSphere()->indexBufferView);
-	// マテリアルCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
+	// light用のCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
 	if (pipelineType == Texture) {
+		// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
+	}
+	if (pipelineType == PhongReflection) {
+		// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->phongRefMaterial->resource->GetGPUVirtualAddress());
 		// light用のCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->camera->resource->GetGPUVirtualAddress());
 	}
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);

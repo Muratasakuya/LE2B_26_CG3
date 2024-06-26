@@ -41,6 +41,18 @@ struct Material {
 	Matrix4x4 uvTransform;
 };
 
+// PhongReflectionマテリアル
+struct PhongRefMaterial {
+
+	Vector4 color;
+	int32_t enableLighting;
+	int32_t enablePhongReflection;
+	float padding[2];
+	Matrix4x4 uvTransform;
+	Vector3 specularColor;
+	float shininess;
+};
+
 // Matrix構造体
 struct TransformationMatrix {
 
@@ -97,6 +109,12 @@ struct DirectionalLight {
 	float intensity;
 };
 
+// カメラワールド座標構造体
+struct CameraForGPU {
+
+	Vector3 worldPosition;
+};
+
 // モデルマテリアルデータ構造体
 struct ModelMaterialData {
 
@@ -118,6 +136,16 @@ struct CBMaterialData {
 
 	// マテリアルマップ
 	Material* data = nullptr;
+};
+
+// CBPhongReflectionマテリアルデータ
+struct CBPhongRefMaterialData {
+
+	// 頂点マテリアル
+	ComPtr<ID3D12Resource> resource;
+
+	// マテリアルマップ
+	PhongRefMaterial* data = nullptr;
 };
 
 // CBトランスフォームデータ
@@ -149,11 +177,23 @@ struct CBLightData {
 	DirectionalLight* data = nullptr;
 };
 
+// CBカメラデータ
+struct CBCameraData {
+
+	// Camera
+	ComPtr<ID3D12Resource> resource;
+
+	// Camera
+	CameraForGPU* data = nullptr;
+};
+
 // CBデータ
 struct CBufferData {
 
 	std::unique_ptr<CBMaterialData> material;
+	std::unique_ptr<CBPhongRefMaterialData> phongRefMaterial;
 	std::unique_ptr<CBTransformData> matrix;
 	std::unique_ptr<CBParticleTransformData> particleMatrix;
 	std::unique_ptr<CBLightData> light;
+	std::unique_ptr<CBCameraData> camera;
 };

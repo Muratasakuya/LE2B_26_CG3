@@ -286,9 +286,12 @@
     <FxCompile Include="Resources\Shaders\Object3D.PS.hlsl" />
     <FxCompile Include="Resources\Shaders\Particle.VS.hlsl" />
     <FxCompile Include="Resources\Shaders\Particle.PS.hlsl" />
+    <FxCompile Include="Resources\Shaders\PhongReflection.VS.hlsl" />
+    <FxCompile Include="Resources\Shaders\PhongReflection.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Object3D.hlsli" />
     <None Include="Resources\Shaders\Particle.hlsli" />
+    <None Include="Resources\Shaders\PhongReflection.hlsli" />
   </ItemGroup>
 </Project>

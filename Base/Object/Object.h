@@ -37,6 +37,7 @@ public:
 
 	void SetEnableLighting(bool enableLighting);
 	void SetEnableHalfLambert(bool enableHalfLambert);
+	void SetEnablePhongReflection(bool enablePhongReflection);
 	void SetScale(Vector3 scale);
 	void SetRotate(Vector3 rotate);
 	void SetTranslate(Vector3 translate);
@@ -68,4 +69,6 @@ protected:
 	bool enableLighting_{};
 	// HalfLambertの有無
 	bool enableHalfLambert_{};
+	// PhongReflectionの有無
+	bool enablePhongReflection_{};
 };

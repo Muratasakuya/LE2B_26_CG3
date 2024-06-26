@@ -12,7 +12,6 @@
 
 // 3D
 #include "Object3D.h"
-#include "Particle.h"
 
 // c++
 #include <memory>
@@ -20,9 +19,6 @@
 #include <vector>
 #include <string>
 #include <numbers>
-
-// 三角形のインスタンスの数
-const uint32_t triangleNum = 2;
 
 /*////////////////////////////////////////////////////////////////////////////////
 *
@@ -57,53 +53,24 @@ private:
 	/*----------------------------------------------------------------------*/
 	// 2Dオブジェクト
 
-	// スプライト
-	std::unique_ptr<Object2D> sprite_;
 
-	// テクスチャの名前
-	std::string spriteTextureName_;
 
 	/*----------------------------------------------------------------------*/
 	// 3Dオブジェクト
 
 	/*----------------------------------------------------------------------*/
-	// 三角形
-	std::array<std::unique_ptr<Object3D>, triangleNum> triangles_;
-
-	// 描画タイプ
-	PipelineType triangleDrawType_;
-
-	// テクスチャの名前
-	std::string triangleTextureName_;
-
-	/*----------------------------------------------------------------------*/
 	// 球
+
+	// インスタンス
 	std::unique_ptr<Object3D> sphere_;
 
 	// 描画タイプ
 	PipelineType sphereDrawType_;
 
+	// ブレンドモード
+	BlendMode sphereBlendMode_;
+
 	// テクスチャの名前
 	std::string sphereTextureName_;
-
-	/*----------------------------------------------------------------------*/
-	// モデル plane
-	std::unique_ptr<Object3D> plane_;
-
-	// 描画タイプ
-	PipelineType planeDrawType_;
-	// ブレンドモード
-	BlendMode planeBlendMode_;
-
-	// モデルの名前
-	std::string planeModelName_;
-
-	// テクスチャの名前
-	std::string planeTextureName_;
-
-	/*----------------------------------------------------------------------*/
-	// パーティクル
-
-	std::unique_ptr<Particle> particle_;
 
 };

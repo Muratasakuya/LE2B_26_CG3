@@ -20,7 +20,7 @@ public:
 	Object3D(Object3DType objectType);
 	~Object3D();
 
-	void Initilize(Camera3D* camera);
+	void Initialize(Camera3D* camera);
 
 	void Update(Camera3D* camera);
 
@@ -32,5 +32,8 @@ private:
 	/*-----------------------------*/
 
 	Object3DType objectType_{};
+
+	Vector3 specularColor_{};
+	float shininess_{};
 
 };

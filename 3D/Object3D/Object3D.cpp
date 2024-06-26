@@ -20,8 +20,10 @@ Object3D::Object3D(Object3DType objectType) {
 
 	// CBufferの作成
 	cBuffer_->material = vertexResource_->CreateMaterial();
+	cBuffer_->phongRefMaterial = vertexResource_->CreatePhongRefMaterial();
 	cBuffer_->matrix = vertexResource_->CreateWVP();
 	cBuffer_->light = vertexResource_->CreateLight();
+	cBuffer_->camera = vertexResource_->CreateCamera();
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -30,8 +32,10 @@ Object3D::Object3D(Object3DType objectType) {
 Object3D::~Object3D() {
 
 	cBuffer_->material.reset();
+	cBuffer_->phongRefMaterial.reset();
 	cBuffer_->matrix.reset();
 	cBuffer_->light.reset();
+	cBuffer_->camera.reset();
 	cBuffer_.reset();
 }
 
@@ -40,10 +44,12 @@ Object3D::~Object3D() {
 /*////////////////////////////////////////////////////////////////////////////////
 *									初期化
 ////////////////////////////////////////////////////////////////////////////////*/
-void Object3D::Initilize(Camera3D* camera) {
+void Object3D::Initialize(Camera3D* camera) {
 
 	// 色
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
+	specularColor_ = { 1.0f,1.0f,1.0f };
+	shininess_ = 32.0f;
 
 	// ライトの向き
 	lightDirection_ = { 0.0f,-1.0f,0.0f };
@@ -65,6 +71,14 @@ void Object3D::Initilize(Camera3D* camera) {
 	cBuffer_->material->data->enableHalfLambert = enableHalfLambert_;
 	cBuffer_->material->data->uvTransform = Matrix4x4::MakeIdentity4x4();
 
+	// PhongRefMaterial
+	cBuffer_->phongRefMaterial->data->color = color_;
+	cBuffer_->phongRefMaterial->data->enableLighting = enableLighting_;
+	cBuffer_->phongRefMaterial->data->enablePhongReflection = enablePhongReflection_;
+	cBuffer_->phongRefMaterial->data->uvTransform = Matrix4x4::MakeIdentity4x4();;
+	cBuffer_->phongRefMaterial->data->specularColor = specularColor_;
+	cBuffer_->phongRefMaterial->data->shininess = shininess_;
+
 	// Light
 	cBuffer_->light->data->color = { 1.0f,1.0f,1.0f,1.0f };
 	cBuffer_->light->data->direction = lightDirection_;
@@ -73,6 +87,9 @@ void Object3D::Initilize(Camera3D* camera) {
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
 	cBuffer_->matrix->data->WVP = matrix_.WVP;
+
+	// Camera
+	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
 }
 
 
@@ -85,9 +102,11 @@ void Object3D::Update(Camera3D* camera) {
 	/*----------------------------------------------------------------------------------------------------------------*/
 	/// ImGui
 
-	ImGui::Begin("fence");
+	ImGui::Begin("sphere");
 
 	ImGui::ColorEdit4("color", &color_.x);
+	ImGui::ColorEdit3("specularColor", &specularColor_.x);
+	ImGui::DragFloat("shininess", &shininess_, 0.01f);
 	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 1.0f);
 	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
@@ -110,12 +129,22 @@ void Object3D::Update(Camera3D* camera) {
 	cBuffer_->material->data->enableLighting = enableLighting_;
 	cBuffer_->material->data->enableHalfLambert = enableHalfLambert_;
 
+	// PhongRefMaterial
+	cBuffer_->phongRefMaterial->data->color = color_;
+	cBuffer_->phongRefMaterial->data->enableLighting = enableLighting_;
+	cBuffer_->phongRefMaterial->data->enablePhongReflection = enablePhongReflection_;
+	cBuffer_->phongRefMaterial->data->specularColor = specularColor_;
+	cBuffer_->phongRefMaterial->data->shininess = shininess_;
+
 	// Light
 	cBuffer_->light->data->direction = lightDirection_;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
 	cBuffer_->matrix->data->WVP = matrix_.WVP;
+
+	// Camera
+	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
 }
 
 

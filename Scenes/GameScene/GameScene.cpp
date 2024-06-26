@@ -36,41 +36,31 @@ GameScene::GameScene() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	/*------------------------------------------------------*/
-	// モデル plane
+	/*--------------------------------------------*/
+	/*  Sphere 球  */
 
 	// 生成
-	plane_ = std::make_unique<Object3D>(Object3DType::Model);
+	sphere_ = std::make_unique<Object3D>(Object3DType::Sphere);
 
 	// 初期化
-	plane_->SetEnableLighting(false);
-	plane_->SetEnableHalfLambert(true);
-	plane_->Initilize(camera3D_.get());
+	sphere_->Initialize(camera3D_.get());
 
-	// Y軸を180度回転
-	plane_->SetRotate({ 0.0f,std::numbers::pi_v<float>,0.0f });
+	// -90度Y軸回転
+	sphere_->SetRotate({ 0.0f,-std::numbers::pi_v<float> / 2.0f,0.0f });
+
+	// Lighting設定
+	sphere_->SetEnableLighting(true);
+	sphere_->SetEnablePhongReflection(true);
 
 	// 描画タイプ
-	planeDrawType_ = Texture;
+	sphereDrawType_ = PhongReflection;
+
 	// ブレンドモード
-	planeBlendMode_ = kBlendModeNormal;
+	sphereBlendMode_ = kBlendModeNormal;
 
 	// テクスチャ読み込み
-	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
-	planeTextureName_ = "uvChecker";
-
-	// モデル読み込み
-	//ModelManager::GetInstance()->LoadModel("./Resources/Obj", "plane.obj");
-	planeModelName_ = "plane";
-
-	/*------------------------------------------------------*/
-	// パーティクル
-
-	// 生成
-	particle_ = std::make_unique<Particle>(camera3D_.get());
-
-	// 初期化
-	particle_->Initialize(camera3D_.get());
+	TextureManager::GetInstance()->LoadTexture("./Resources/Images/monsterBall.png");
+	sphereTextureName_ = "monsterBall";
 
 }
 
@@ -81,8 +71,7 @@ GameScene::~GameScene() {
 
 	camera2D_.reset();
 	camera3D_.reset();
-	plane_.reset();
-	particle_.reset();
+	sphere_.reset();
 }
 
 
@@ -109,11 +98,8 @@ void GameScene::Initialize() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// plane
-	//plane_->Initilize(camera3D_.get());
-
-	// パーティクル
-	particle_->Initialize(camera3D_.get());
+	// 球
+	sphere_->Initialize(camera3D_.get());
 
 }
 
@@ -142,34 +128,8 @@ void GameScene::Update() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	//// BlendModeの文字列配列
-	//const char* BlendModeNames[] = {
-
-	//	"None",
-	//	"Normal",
-	//	"Add",
-	//	"Subtract",
-	//	"Multiply",
-	//	"Screen"
-	//};
-
-	//ImGui::Begin("plane");
-
-	//// BlendModeのドロップダウン
-	//int currentBlendMode = static_cast<int>(planeBlendMode_);
-
-	//if (ImGui::Combo("Blend Mode", &currentBlendMode, BlendModeNames, IM_ARRAYSIZE(BlendModeNames))) {
-
-	//	planeBlendMode_ = static_cast<BlendMode>(currentBlendMode);
-	//}
-
-	//ImGui::End();
-
-	// plane
-	//plane_->Update(camera3D_.get());
-
-	// パーティクル
-	particle_->Update(camera3D_.get());
+	// 球
+	sphere_->Update(camera3D_.get());
 
 }
 
@@ -184,25 +144,11 @@ void GameScene::Draw() {
 	/*======================================================*/
 	// 2Dオブジェクト
 
-	// スプライト
-	//sprite_->Draw(spriteTextureName_);
+
 
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// 三角形
-	/*for (const auto& triangle : triangles_) {
-
-		triangle->Draw(triangleDrawType_, triangleTextureName_);
-	}*/
-
-	// 球
-	//sphere_->Draw(sphereDrawType_, sphereTextureName_);
-
-	// plane
-	//plane_->Draw(planeDrawType_, planeBlendMode_, planeTextureName_, planeModelName_);
-
-	// パーティクル
-	particle_->Draw();
+	sphere_->Draw(sphereDrawType_, sphereBlendMode_, sphereTextureName_);
 
 }

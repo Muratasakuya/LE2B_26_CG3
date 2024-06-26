@@ -69,6 +69,33 @@ std::unique_ptr<CBMaterialData> VertexResource::CreateMaterial() {
 
 /*////////////////////////////////////////////////////////////////////////////////
 
+*						PhongReflectionマテリアルデータの生成
+
+////////////////////////////////////////////////////////////////////////////////*/
+std::unique_ptr<CBPhongRefMaterialData> VertexResource::CreatePhongRefMaterial() {
+
+
+	DXCommon* dxCommon = DXCommon::GetInstance();
+
+	HRESULT hr;
+	std::unique_ptr<CBPhongRefMaterialData> material = std::make_unique<CBPhongRefMaterialData>();
+
+	// 頂点マテリアルの生成
+	material->resource = CreateBufferResource(dxCommon->GetDevice(), sizeof(PhongRefMaterial));
+
+	// マテリアルデータのマッピング
+	hr = material->resource->Map(0, nullptr, reinterpret_cast<void**>(&material->data));
+
+	// 作れなければエラー
+	assert(SUCCEEDED(hr));
+
+	return material;
+}
+
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+
 *								 WVPデータの生成
 
 ////////////////////////////////////////////////////////////////////////////////*/
@@ -150,4 +177,30 @@ std::unique_ptr<CBLightData> VertexResource::CreateLight() {
 	assert(SUCCEEDED(hr));
 
 	return light;
+}
+
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+
+*								 Cameraデータの生成
+
+////////////////////////////////////////////////////////////////////////////////*/
+std::unique_ptr<CBCameraData> VertexResource::CreateCamera() {
+
+	DXCommon* dxCommon = DXCommon::GetInstance();
+
+	HRESULT hr;
+	std::unique_ptr<CBCameraData> camera = std::make_unique<CBCameraData>();
+
+	// Cameraの生成
+	camera->resource = CreateBufferResource(dxCommon->GetDevice(), sizeof(CameraForGPU));
+
+	// Cameraデータのマッピング
+	hr = camera->resource->Map(0, nullptr, reinterpret_cast<void**>(&camera->data));
+
+	// 作れなければエラー
+	assert(SUCCEEDED(hr));
+
+	return camera;
 }
