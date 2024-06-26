@@ -64,6 +64,8 @@ struct ParticleData {
 	Vector4 color;
 	float lifeTime;
 	float currentTime;
+	float respawnTime;
+	float respawnDelay;
 };
 
 // 平行光源構造体

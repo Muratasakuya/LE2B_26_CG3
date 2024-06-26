@@ -138,8 +138,6 @@ void Particle::Initialize(Camera3D* camera) {
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 
-	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
-
 	// SRT
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.0f,0.0f,0.0f };
@@ -193,13 +191,30 @@ void Particle::Update(Camera3D* camera) {
 
 	ImGui::End();
 
+	// 乱数の生成
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
 	// 描画すべきインスタンス数
 	uint32_t numInstance = 0;
 
 	// アフィン
 	for (uint32_t index = 0; index < instanceMaxCount_; ++index) {
 
+		// パーティクルが消えている場合
 		if (particles_[index].lifeTime <= particles_[index].currentTime) {
+
+			// リスポーンタイマーを進める
+			particles_[index].respawnTime += kDeltaTime;
+
+			// リスポーンタイマーが遅延時間を超えた場合
+			if (particles_[index].respawnTime >= particles_[index].respawnDelay) {
+
+				// パーティクルを再生成する
+				particles_[index].currentTime = 0.0f;
+				particles_[index].respawnTime = 0.0f;
+				particles_[index] = MakeNewParticle(randomEngine);
+			}
 
 			continue;
 		}
@@ -229,6 +244,7 @@ void Particle::Update(Camera3D* camera) {
 		++numInstance;
 	}
 
+	// インスタンス数の更新
 	numInstance_ = numInstance;
 
 	// Material
