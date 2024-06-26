@@ -19,8 +19,8 @@ enum class DescriptorType {
 // デスクリプタの数
 static const uint32_t descriptorNum = static_cast<size_t>(DescriptorType::DescriptorTypeNum);
 
-// SRVのNumDescriptorsの最大数、ImGuiが1個、その他をTextureで使う
-static const uint32_t srvDescriptorMaxNum = 128;
+// SRVのNumDescriptorsの最大数、ImGuiが1個、パーティクル用に1個、その他をTextureで使う
+static const uint32_t srvDescriptorMaxNum = 12;
 
 /*////////////////////////////////////////////////////////////////////////////////
 *

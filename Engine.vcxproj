@@ -54,7 +54,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Particle;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -81,7 +81,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Particle;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -105,6 +105,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Base\Object\Object.cpp" />
     <ClCompile Include="3D\Model\Model.cpp" />
     <ClCompile Include="Managers\ModelManager\ModelManager.cpp" />
+    <ClCompile Include="3D\Particle\Particle.cpp" />
     <ClCompile Include="Scenes\IScene\IScene.cpp" />
     <ClCompile Include="Managers\SceneManager\SceneManager.cpp" />
     <ClCompile Include="Scenes\GameScene\GameScene.cpp" />
@@ -149,6 +150,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Lib\Matrix\Matrix3x3.h" />
     <ClInclude Include="3D\Model\Model.h" />
     <ClInclude Include="Managers\ModelManager\ModelManager.h" />
+    <ClInclude Include="3D\Particle\Particle.h" />
     <ClInclude Include="Scenes\IScene\IScene.h" />
     <ClInclude Include="Managers\SceneManager\SceneManager.h" />
     <ClInclude Include="Scenes\GameScene\GameScene.h" />
@@ -197,6 +199,18 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\Particle.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Particle.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Resources\Shaders\Primitive.PS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -213,6 +227,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Object3D.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Resources\Shaders\Particle.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>

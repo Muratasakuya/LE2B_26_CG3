@@ -65,7 +65,12 @@ public:
 	static void DrawSphere(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// モデル
-	static void DrawModel(const CBufferData* cBufferData, const std::string modelName,const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+	static void DrawModel(const CBufferData* cBufferData, const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+
+	// パーティクル
+	static void DrawParticle(
+		const CBufferData* cBufferData, const UINT vertexNum,const UINT instanceCount, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle,
+		const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 private:
 	/*-----------------------------*/

@@ -12,6 +12,7 @@
 
 // 3D
 #include "Object3D.h"
+#include "Particle.h"
 
 // c++
 #include <memory>
@@ -101,19 +102,8 @@ private:
 	std::string planeTextureName_;
 
 	/*----------------------------------------------------------------------*/
-	// モデル fence
+	// パーティクル
 
-	std::unique_ptr<Object3D> fence_;
-
-	// 描画タイプ
-	PipelineType fenceDrawType_;
-	// ブレンドモード
-	BlendMode fenceBlendMode_;
-
-	// モデルの名前
-	std::string fenceModelName_;
-
-	// テクスチャの名前
-	std::string fenceTextureName_;
+	std::unique_ptr<Particle> particle_;
 
 };

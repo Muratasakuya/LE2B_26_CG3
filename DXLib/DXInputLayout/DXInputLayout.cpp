@@ -51,5 +51,27 @@ void DXInputLayout::Create(PipelineType pipelineType) {
 		inputLayoutDesc_[pipelineType] = {};
 		inputLayoutDesc_[pipelineType].pInputElementDescs = textureInputElementDescs;
 		inputLayoutDesc_[pipelineType].NumElements = _countof(textureInputElementDescs);
+	} else if (pipelineType == pParticle) {
+
+		static D3D12_INPUT_ELEMENT_DESC textureInputElementDescs[3]{};
+
+		textureInputElementDescs[0].SemanticName = "POSITION";
+		textureInputElementDescs[0].SemanticIndex = 0;
+		textureInputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		textureInputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+		textureInputElementDescs[1].SemanticName = "TEXCOORD";
+		textureInputElementDescs[1].SemanticIndex = 0;
+		textureInputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+		textureInputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+		textureInputElementDescs[2].SemanticName = "NORMAL";
+		textureInputElementDescs[2].SemanticIndex = 0;
+		textureInputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		textureInputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+		inputLayoutDesc_[pipelineType] = {};
+		inputLayoutDesc_[pipelineType].pInputElementDescs = textureInputElementDescs;
+		inputLayoutDesc_[pipelineType].NumElements = _countof(textureInputElementDescs);
 	}
 }

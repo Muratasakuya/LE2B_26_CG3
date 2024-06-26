@@ -60,34 +60,18 @@ GameScene::GameScene() {
 	planeTextureName_ = "uvChecker";
 
 	// モデル読み込み
-	ModelManager::GetInstance()->LoadModel("./Resources/Obj", "plane.obj");
+	//ModelManager::GetInstance()->LoadModel("./Resources/Obj", "plane.obj");
 	planeModelName_ = "plane";
 
 	/*------------------------------------------------------*/
-	// モデル fence
+	// パーティクル
 
 	// 生成
-	fence_ = std::make_unique<Object3D>(Object3DType::Model);
+	particle_ = std::make_unique<Particle>();
 
 	// 初期化
-	fence_->SetEnableLighting(false);
-	fence_->SetEnableHalfLambert(true);
-	fence_->Initilize(camera3D_.get());
+	particle_->Initialize(camera3D_.get());
 
-	fence_->SetRotate({ std::numbers::pi_v<float> / 6.0f,std::numbers::pi_v<float>,0.0f });
-
-	// 描画タイプ
-	fenceDrawType_ = Texture;
-	// ブレンドモード
-	fenceBlendMode_ = kBlendModeNormal;
-
-	// テクスチャ読み込み
-	TextureManager::GetInstance()->LoadTexture("./Resources/Images/fence.png");
-	fenceTextureName_ = "fence";
-
-	// モデル読み込み
-	ModelManager::GetInstance()->LoadModel("./Resources/Obj", "fence.obj");
-	fenceModelName_ = "fence";
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +82,7 @@ GameScene::~GameScene() {
 	camera2D_.reset();
 	camera3D_.reset();
 	plane_.reset();
-	fence_.reset();
+	particle_.reset();
 }
 
 
@@ -126,10 +110,10 @@ void GameScene::Initialize() {
 	// 3Dオブジェクト
 
 	// plane
-	plane_->Initilize(camera3D_.get());
+	//plane_->Initilize(camera3D_.get());
 
-	// fence
-	fence_->Initilize(camera3D_.get());
+	// パーティクル
+	particle_->Initialize(camera3D_.get());
 
 }
 
@@ -158,31 +142,34 @@ void GameScene::Update() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// BlendModeの文字列配列
-	const char* BlendModeNames[] = {
+	//// BlendModeの文字列配列
+	//const char* BlendModeNames[] = {
 
-		"None",
-		"Normal",
-		"Add",
-		"Subtract",
-		"Multiply",
-		"Screen"
-	};
+	//	"None",
+	//	"Normal",
+	//	"Add",
+	//	"Subtract",
+	//	"Multiply",
+	//	"Screen"
+	//};
 
-	ImGui::Begin("fence");
+	//ImGui::Begin("plane");
 
-	// BlendModeのドロップダウン
-	int currentBlendMode = static_cast<int>(fenceBlendMode_);
+	//// BlendModeのドロップダウン
+	//int currentBlendMode = static_cast<int>(planeBlendMode_);
 
-	if (ImGui::Combo("Blend Mode", &currentBlendMode, BlendModeNames, IM_ARRAYSIZE(BlendModeNames))) {
+	//if (ImGui::Combo("Blend Mode", &currentBlendMode, BlendModeNames, IM_ARRAYSIZE(BlendModeNames))) {
 
-		fenceBlendMode_ = static_cast<BlendMode>(currentBlendMode);
-	}
+	//	planeBlendMode_ = static_cast<BlendMode>(currentBlendMode);
+	//}
 
-	ImGui::End();
+	//ImGui::End();
 
 	// plane
-	fence_->Update(camera3D_.get());
+	//plane_->Update(camera3D_.get());
+
+	// パーティクル
+	particle_->Update(camera3D_.get());
 
 }
 
@@ -190,6 +177,9 @@ void GameScene::Update() {
 *								    描画処理
 ////////////////////////////////////////////////////////////////////////////////*/
 void GameScene::Draw() {
+
+	// 3DCameraのImGui
+	camera3D_->ImGuiDraw();
 
 	/*======================================================*/
 	// 2Dオブジェクト
@@ -209,7 +199,10 @@ void GameScene::Draw() {
 	// 球
 	//sphere_->Draw(sphereDrawType_, sphereTextureName_);
 
-	// fence
-	fence_->Draw(fenceDrawType_, fenceBlendMode_, fenceTextureName_, fenceModelName_);
+	// plane
+	//plane_->Draw(planeDrawType_, planeBlendMode_, planeTextureName_, planeModelName_);
+
+	// パーティクル
+	particle_->Draw();
 
 }

@@ -243,3 +243,30 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	// DrawCall
 	modelManger_->ModelDrawCall(commandList.Get(), modelName);
 }
+
+// パーティクル
+void Engine::DrawParticle(
+	const CBufferData* cBufferData, const UINT vertexNum, const UINT instanceCount, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle,
+	const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode) {
+
+	// CommandListをdxCommonClassからもってくる
+	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
+
+	// 頂点バッファへデータ転送
+	modelManger_->VertexBufferMemcpy(modelName);
+	// パイプラインのセット
+	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
+	// 頂点バッファの設定
+	modelManger_->IASetVertexBuffers(commandList.Get(), modelName);
+	// マテリアルCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
+	// wvp用のCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
+	// SRVのセット
+	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
+	// instacning
+	commandList->SetGraphicsRootDescriptorTable(3, gpuHandle);
+	
+	// DrawCall
+	commandList->DrawInstanced(vertexNum, instanceCount, 0, 0);
+}

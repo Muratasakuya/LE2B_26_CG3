@@ -139,6 +139,17 @@ void PipelineManager::ShaderCompile(
 		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Object3D.PS.hlsl", L"ps_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
 		assert(psBlob_[pipelineType] != nullptr);
+	} else if (pipelineType == pParticle) {
+
+		// 頂点シェーダ
+		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Particle.VS.hlsl", L"vs_6_0",
+			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
+		assert(vsBlob_[pipelineType] != nullptr);
+
+		// ピクセルシェーダ
+		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Particle.PS.hlsl", L"ps_6_0",
+			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
+		assert(psBlob_[pipelineType] != nullptr);
 	}
 }
 
@@ -198,7 +209,7 @@ void PipelineManager::CreatePipelineStateObject(DXCommon* dxCommon) {
 	depthStencil_ = std::make_unique<DXDepthStencil>();
 
 	// パイプラインの名前
-	pipelineTypes_ = { Primitive, Texture };
+	pipelineTypes_ = { Primitive, Texture, pParticle };
 
 	// ブレンドモードの名前
 	blendModeTypes = { kBlendModeNone ,kBlendModeNormal ,kBlendModeAdd ,kBlendModeSubtract ,kBlendModeMultiply ,kBlendModeScreen };

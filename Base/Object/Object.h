@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <optional>
+#include <numbers>
 
 // Transform構造体
 struct Transform {

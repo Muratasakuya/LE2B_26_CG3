@@ -135,6 +135,9 @@
     <ClCompile Include="Managers\ModelManager\ModelManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="3D\Particle\Particle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\DXCommon\DXCommon.h">
@@ -269,6 +272,9 @@
     <ClInclude Include="Managers\ModelManager\ModelManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="3D\Particle\Particle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />
@@ -278,8 +284,11 @@
     <FxCompile Include="Resources\Shaders\Primitive.VS.hlsl" />
     <FxCompile Include="Resources\Shaders\Object3D.VS.hlsl" />
     <FxCompile Include="Resources\Shaders\Object3D.PS.hlsl" />
+    <FxCompile Include="Resources\Shaders\Particle.VS.hlsl" />
+    <FxCompile Include="Resources\Shaders\Particle.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Object3D.hlsli" />
+    <None Include="Resources\Shaders\Particle.hlsli" />
   </ItemGroup>
 </Project>

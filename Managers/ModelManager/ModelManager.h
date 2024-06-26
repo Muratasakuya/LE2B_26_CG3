@@ -32,6 +32,7 @@ public:
 	void Initialize();
 
 	void LoadModel(const std::string& directoryPath, const std::string& filename);
+	void MakeModel(ModelData modelData, const std::string& modelName);
 
 	ModelMaterialData LoadMaterialTemplateFile(const std::string& directorypath, const std::string& filename);
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);

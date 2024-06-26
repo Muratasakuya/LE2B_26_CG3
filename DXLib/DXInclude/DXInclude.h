@@ -19,6 +19,7 @@ enum PipelineType {
 
 	Primitive,     // 単色 テクスチャを使用しない
 	Texture,       // テクスチャ使用 Lightingの有無あり
+	pParticle,      // パーティクル用
 };
 
 // ブレンドモード
@@ -33,7 +34,7 @@ enum BlendMode {
 };
 
 // パイプラインタイプの数
-static const uint32_t pipelineTypeNum = 2;
+static const uint32_t pipelineTypeNum = 3;
 
 // ブレンドモードの数
 static const uint32_t blendModeNum = 6;
