@@ -20,6 +20,8 @@ public:
 	static Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 	// 逆行列
 	static Matrix4x4 Inverse(const Matrix4x4& m);
+	// 転置行列
+	static Matrix4x4 Transpose(const Matrix4x4& m);
 	// 単位行列
 	static Matrix4x4 MakeIdentity4x4();
 	// 拡縮行列

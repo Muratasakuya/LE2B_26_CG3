@@ -110,6 +110,18 @@ Matrix4x4 Matrix4x4::Inverse(const Matrix4x4& m) {
 	return matrix;
 }
 
+Matrix4x4 Matrix4x4::Transpose(const Matrix4x4& m) {
+
+	Matrix4x4 matrix;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			matrix.m[i][j] = m.m[j][i];
+		}
+	}
+
+	return matrix;
+}
+
 Matrix4x4 Matrix4x4::MakeIdentity4x4() {
 
 	Matrix4x4 matrix{};

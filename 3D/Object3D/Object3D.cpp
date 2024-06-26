@@ -49,7 +49,7 @@ void Object3D::Initialize(Camera3D* camera) {
 	// 色
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
 	specularColor_ = { 1.0f,1.0f,1.0f };
-	shininess_ = 32.0f;
+	shininess_ = 64.0f;
 
 	// ライトの向き
 	lightDirection_ = { 0.0f,-1.0f,0.0f };
@@ -69,6 +69,8 @@ void Object3D::Initialize(Camera3D* camera) {
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	matrix_.WVP =
 		Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+	matrix_.WorldInverseTranspose =
+		Matrix4x4::Transpose(Matrix4x4::Inverse(matrix_.World));
 
 	// Material
 	cBuffer_->material->data->color = color_;
@@ -93,6 +95,7 @@ void Object3D::Initialize(Camera3D* camera) {
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
 	cBuffer_->matrix->data->WVP = matrix_.WVP;
+	cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
 
 	// Camera
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
@@ -113,7 +116,7 @@ void Object3D::Update(Camera3D* camera) {
 	ImGui::ColorEdit4("color", &color_.x);
 	ImGui::ColorEdit3("specularColor", &specularColor_.x);
 	ImGui::DragFloat("shininess", &shininess_, 0.01f);
-	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 1.0f);
+	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
 	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
@@ -138,6 +141,8 @@ void Object3D::Update(Camera3D* camera) {
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	matrix_.WVP =
 		Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+	matrix_.WorldInverseTranspose =
+		Matrix4x4::Transpose(Matrix4x4::Inverse(matrix_.World));
 
 	// Material
 	cBuffer_->material->data->color = color_;
@@ -158,6 +163,7 @@ void Object3D::Update(Camera3D* camera) {
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
 	cBuffer_->matrix->data->WVP = matrix_.WVP;
+	cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
 
 	// Camera
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
