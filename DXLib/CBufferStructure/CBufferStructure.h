@@ -47,7 +47,8 @@ struct PhongRefMaterial {
 	Vector4 color;
 	int32_t enableLighting;
 	int32_t enablePhongReflection;
-	float padding[2];
+	int32_t enableBlinnPhongReflection;
+	float padding;
 	Matrix4x4 uvTransform;
 	Vector3 specularColor;
 	float shininess;

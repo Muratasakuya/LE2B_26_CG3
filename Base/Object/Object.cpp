@@ -19,6 +19,12 @@ void Object::SetEnablePhongReflection(bool enablePhongReflection) {
 	enablePhongReflection_ = enablePhongReflection;
 }
 
+// enableBlinnPhongReflection_ = enableBlinnPhongReflection setter
+void Object::SetEnableBlinnPhongReflection(bool enableBlinnPhongReflection) {
+
+	enableBlinnPhongReflection_ = enableBlinnPhongReflection;
+}
+
 // transform_.scale = scale setter
 void Object::SetScale(Vector3 scale) {
 

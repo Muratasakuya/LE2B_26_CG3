@@ -59,6 +59,11 @@ void Object3D::Initialize(Camera3D* camera) {
 	transform_.rotate = { 0.0f,0.0f,0.0f };
 	transform_.translate = { 0.0f,0.0f,0.0f };
 
+	enableLighting_ = false;
+	enableHalfLambert_ = false;
+	enablePhongReflection_ = false;
+	enableBlinnPhongReflection_ = false;
+
 	// Matrix
 	matrix_.World =
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -75,6 +80,7 @@ void Object3D::Initialize(Camera3D* camera) {
 	cBuffer_->phongRefMaterial->data->color = color_;
 	cBuffer_->phongRefMaterial->data->enableLighting = enableLighting_;
 	cBuffer_->phongRefMaterial->data->enablePhongReflection = enablePhongReflection_;
+	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = enableBlinnPhongReflection_;
 	cBuffer_->phongRefMaterial->data->uvTransform = Matrix4x4::MakeIdentity4x4();;
 	cBuffer_->phongRefMaterial->data->specularColor = specularColor_;
 	cBuffer_->phongRefMaterial->data->shininess = shininess_;
@@ -133,6 +139,7 @@ void Object3D::Update(Camera3D* camera) {
 	cBuffer_->phongRefMaterial->data->color = color_;
 	cBuffer_->phongRefMaterial->data->enableLighting = enableLighting_;
 	cBuffer_->phongRefMaterial->data->enablePhongReflection = enablePhongReflection_;
+	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = enableBlinnPhongReflection_;
 	cBuffer_->phongRefMaterial->data->specularColor = specularColor_;
 	cBuffer_->phongRefMaterial->data->shininess = shininess_;
 
