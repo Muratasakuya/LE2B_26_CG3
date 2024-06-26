@@ -4,42 +4,38 @@
                      Particle PS Shader
 ===========================================================*/
 
-struct Material
-{
+struct Material {
     
-    float4 color;
-    int enableLighting;
-    int enableHalfLambert;
-    float4x4 uvTransform;
+	float4 color;
+	int enableLighting;
+	int enableHalfLambert;
+	float4x4 uvTransform;
 };
 
-struct PixelShaderOutput
-{
+struct PixelShaderOutput {
     
-    float4 color : SV_TARGET0;
+	float4 color : SV_TARGET0;
 };
 
 ConstantBuffer<Material> gMaterial : register(b0);
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
 
-PixelShaderOutput main(VertexShaderOutput input)
-{
+PixelShaderOutput main(VertexShaderOutput input) {
     
-    float4 transformUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
-    float4 textureColor = gTexture.Sample(gSampler, transformUV.xy);
+	float4 transformUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
+	float4 textureColor = gTexture.Sample(gSampler, transformUV.xy);
     
-    PixelShaderOutput output;
+	PixelShaderOutput output;
     
      // texture‚Ìƒ¿’l‚ª0.5fˆÈ‰º‚ÌŽž‚ÉPixel‚ðŠü‹p
-    if (textureColor.a <= 0.5f)
-    {
+	if (textureColor.a <= 0.5f) {
             
-        discard;
-    }
+		discard;
+	}
     
-    output.color.rgb = gMaterial.color.rgb * textureColor.rgb * input.color.rgb;
-    output.color.a = gMaterial.color.a * textureColor.a * input.color.a;
+	output.color.rgb = gMaterial.color.rgb * textureColor.rgb * input.color.rgb;
+	output.color.a = gMaterial.color.a * textureColor.a * input.color.a;
     
-    return output;
+	return output;
 }

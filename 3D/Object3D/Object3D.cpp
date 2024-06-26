@@ -119,10 +119,19 @@ void Object3D::Update(Camera3D* camera) {
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
 	ImGui::SliderFloat3("translate", &transform_.translate.x, -5.0f, 5.0f);
 	ImGui::SliderFloat3("LightDirection", &lightDirection_.x, -1.0f, 1.0f);
+	ImGui::Checkbox("enableBlinnPhongReflection", &enableBlinnPhongReflection_);
 
 	ImGui::End();
 
 	/*----------------------------------------------------------------------------------------------------------------*/
+
+	if (enableBlinnPhongReflection_) {
+
+		enablePhongReflection_ = false;
+	} else if (!enableBlinnPhongReflection_) {
+
+		enablePhongReflection_ = true;
+	}
 
 	// Matrix
 	matrix_.World =

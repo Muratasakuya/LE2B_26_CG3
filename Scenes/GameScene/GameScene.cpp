@@ -45,12 +45,9 @@ GameScene::GameScene() {
 	// 初期化
 	sphere_->Initialize(camera3D_.get());
 
-	// -90度Y軸回転
-	sphere_->SetRotate({ 0.0f,-std::numbers::pi_v<float> / 2.0f,0.0f });
-
 	// Lighting設定
 	sphere_->SetEnableLighting(true);
-	sphere_->SetEnablePhongReflection(true);
+	sphere_->SetEnableBlinnPhongReflection(true);
 
 	// 描画タイプ
 	sphereDrawType_ = PhongReflection;

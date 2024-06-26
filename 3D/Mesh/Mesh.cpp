@@ -188,7 +188,7 @@ void Mesh::SetSphereData(VertexData* vertexData, uint32_t* indexData) {
 		for (uint32_t lonIndex = 0; lonIndex < kSphereSubdivision; lonIndex++) {
 
 			uint32_t start = (latIndex * kSphereSubdivision + lonIndex) * 4;
-			float lon = lonIndex * kLonEvery;
+			float lon = lonIndex * kLonEvery + std::numbers::pi_v<float> / 2.0f;
 
 			float u0 = static_cast<float>(lonIndex) / kSphereSubdivision;
 			float u1 = static_cast<float>(lonIndex + 1) / kSphereSubdivision;
