@@ -149,6 +149,17 @@ void Particle::Initialize(Camera3D* camera) {
 	// ライトの向き
 	lightDirection_ = { 0.0f,-1.0f,0.0f };
 
+	//useBillboradの有無
+	useBillboard_ = true;
+
+	// billboard変換
+	Matrix4x4 backToFrontMatrix = Matrix4x4::MakeYawMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix = Matrix4x4::Multiply(backToFrontMatrix, camera->GetCameraMatrix());
+	// 平行移動成分はなし
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
+
 	// アフィン
 	for (uint32_t index = 0; index < instanceMaxCount_; ++index) {
 
@@ -157,14 +168,23 @@ void Particle::Initialize(Camera3D* camera) {
 		particles_[index].transform.scale = transform_.scale;
 		particles_[index].transform.rotate = transform_.rotate;
 
-		// Matrix
-		Matrix4x4 worldMatrix =
-			Matrix4x4::MakeAffineMatrix(particles_[index].transform.scale, particles_[index].transform.rotate, particles_[index].transform.translate);
-		Matrix4x4 wvpMatrix =
-			Matrix4x4::Multiply(worldMatrix, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+		Matrix4x4 scaleMatrix = Matrix4x4::MakeScaleMatrix(particles_[index].transform.scale);
+		Matrix4x4 translateMatrix = Matrix4x4::MakeTranslateMatrix(particles_[index].transform.translate);
 
-		cBuffer_->particleMatrix->particleData[index].World = worldMatrix;
-		cBuffer_->particleMatrix->particleData[index].WVP = wvpMatrix;
+		// Matrix
+		if (useBillboard_) {
+
+			worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(billboardMatrix, translateMatrix));
+		} else {
+
+			worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(Matrix4x4::MakeIdentity4x4(), translateMatrix));
+		}
+
+		wvpMatrix_ =
+			Matrix4x4::Multiply(worldMatrix_, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+
+		cBuffer_->particleMatrix->particleData[index].World = worldMatrix_;
+		cBuffer_->particleMatrix->particleData[index].WVP = wvpMatrix_;
 		cBuffer_->particleMatrix->particleData[index].color = particles_[index].color;
 	}
 
@@ -188,6 +208,7 @@ void Particle::Update(Camera3D* camera) {
 	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
+	ImGui::Checkbox("useBillboard", &useBillboard_);
 
 	ImGui::End();
 
@@ -197,6 +218,14 @@ void Particle::Update(Camera3D* camera) {
 
 	// 描画すべきインスタンス数
 	uint32_t numInstance = 0;
+
+	// billboard変換
+	Matrix4x4 backToFrontMatrix = Matrix4x4::MakeYawMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix = Matrix4x4::Multiply(backToFrontMatrix, camera->GetCameraMatrix());
+	// 平行移動成分はなし
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
 
 	// アフィン
 	for (uint32_t index = 0; index < instanceMaxCount_; ++index) {
@@ -228,16 +257,25 @@ void Particle::Update(Camera3D* camera) {
 		particles_[index].transform.scale = transform_.scale;
 		particles_[index].transform.rotate = transform_.rotate;
 
+		Matrix4x4 scaleMatrix = Matrix4x4::MakeScaleMatrix(particles_[index].transform.scale);
+		Matrix4x4 translateMatrix = Matrix4x4::MakeTranslateMatrix(particles_[index].transform.translate);
+
 		// Matrix
-		Matrix4x4 worldMatrix =
-			Matrix4x4::MakeAffineMatrix(particles_[index].transform.scale, particles_[index].transform.rotate, particles_[index].transform.translate);
-		Matrix4x4 wvpMatrix =
-			Matrix4x4::Multiply(worldMatrix, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+		if (useBillboard_) {
+
+			worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(billboardMatrix, translateMatrix));
+		} else {
+
+			worldMatrix_ = Matrix4x4::Multiply(scaleMatrix, Matrix4x4::Multiply(Matrix4x4::MakeIdentity4x4(), translateMatrix));
+		}
+
+		wvpMatrix_ =
+			Matrix4x4::Multiply(worldMatrix_, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
 		float alpha = 1.0f - (particles_[index].currentTime / particles_[index].lifeTime);
 
-		cBuffer_->particleMatrix->particleData[numInstance].World = worldMatrix;
-		cBuffer_->particleMatrix->particleData[numInstance].WVP = wvpMatrix;
+		cBuffer_->particleMatrix->particleData[numInstance].World = worldMatrix_;
+		cBuffer_->particleMatrix->particleData[numInstance].WVP = wvpMatrix_;
 		cBuffer_->particleMatrix->particleData[numInstance].color = particles_[index].color;
 		cBuffer_->particleMatrix->particleData[numInstance].color.w = alpha;
 

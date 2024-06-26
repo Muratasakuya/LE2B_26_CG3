@@ -45,6 +45,8 @@ private:
 	/*-----------------------------*/
 
 	ParticleData particles_[instanceMaxCount_];
+	Matrix4x4 worldMatrix_;
+	Matrix4x4 wvpMatrix_;
 
 	uint32_t numInstance_ = 0;
 
@@ -54,6 +56,8 @@ private:
 	std::string textureName_;
 
 	BlendMode blendMode_;
+
+	bool useBillboard_;
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc_{};
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU_{};

@@ -4,6 +4,12 @@
 
 
 
+// cameraMatrix_ getter
+Matrix4x4 Camera3D::GetCameraMatrix() const {
+
+	return cameraMatrix_;
+}
+
 // viewMatrix_ getter
 Matrix4x4 Camera3D::GetViewMatrix() const {
 
@@ -27,8 +33,8 @@ void Camera3D::Initialize() {
 
 	// アフィン
 	transform_.scale = { 1.0f,1.0f,1.0f };
-	transform_.rotate = { std::numbers::pi_v<float> / 10.0f,std::numbers::pi_v<float>,0.0f };
-	transform_.translate = { 0.0f,4.0f,10.0f };
+	transform_.rotate = { std::numbers::pi_v<float> / 3.0f,std::numbers::pi_v<float>,0.0f };
+	transform_.translate = { 0.0f,23.0f,10.0f };
 
 	cameraMatrix_ =
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
