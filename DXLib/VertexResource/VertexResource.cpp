@@ -183,6 +183,34 @@ std::unique_ptr<CBLightData> VertexResource::CreateLight() {
 
 /*////////////////////////////////////////////////////////////////////////////////
 
+*								PointLightデータの生成
+
+////////////////////////////////////////////////////////////////////////////////*/
+std::unique_ptr<CBPointLightData> VertexResource::CreatePointLight() {
+
+
+	DXCommon* dxCommon = DXCommon::GetInstance();
+
+	HRESULT hr;
+	std::unique_ptr<CBPointLightData> pointLight = std::make_unique<CBPointLightData>();
+
+	// PointLightの生成
+	pointLight->resource = CreateBufferResource(dxCommon->GetDevice(), sizeof(PointLight));
+
+	// PointLightデータのマッピング
+	hr = pointLight->resource->Map(0, nullptr, reinterpret_cast<void**>(&pointLight->data));
+
+	// 作れなければエラー
+	assert(SUCCEEDED(hr));
+
+	return pointLight;
+}
+
+
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+
 *								 Cameraデータの生成
 
 ////////////////////////////////////////////////////////////////////////////////*/

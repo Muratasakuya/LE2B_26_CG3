@@ -111,6 +111,17 @@ struct DirectionalLight {
 	float intensity;
 };
 
+// 点光源構造体
+struct PointLight {
+
+	Vector4 color;
+	Vector3 pos;
+	float intensity;
+	float radius;
+	float decay;
+	float padding[2];
+};
+
 // カメラワールド座標構造体
 struct CameraForGPU {
 
@@ -179,6 +190,16 @@ struct CBLightData {
 	DirectionalLight* data = nullptr;
 };
 
+// CBポイントライトデータ
+struct CBPointLightData {
+
+	// PointLight
+	ComPtr<ID3D12Resource> resource;
+
+	// PointLight
+	PointLight* data = nullptr;
+};
+
 // CBカメラデータ
 struct CBCameraData {
 
@@ -197,5 +218,6 @@ struct CBufferData {
 	std::unique_ptr<CBTransformData> matrix;
 	std::unique_ptr<CBParticleTransformData> particleMatrix;
 	std::unique_ptr<CBLightData> light;
+	std::unique_ptr<CBPointLightData> pointLight;
 	std::unique_ptr<CBCameraData> camera;
 };

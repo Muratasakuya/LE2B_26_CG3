@@ -33,6 +33,9 @@ public:
 	// Light生成
 	std::unique_ptr<CBLightData> CreateLight();
 
+	// PointLight生成
+	std::unique_ptr<CBPointLightData> CreatePointLight();
+
 	// Camera生成
 	std::unique_ptr<CBCameraData> CreateCamera();
 

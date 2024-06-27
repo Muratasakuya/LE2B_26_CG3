@@ -23,6 +23,7 @@ Object3D::Object3D(Object3DType objectType) {
 	cBuffer_->phongRefMaterial = vertexResource_->CreatePhongRefMaterial();
 	cBuffer_->matrix = vertexResource_->CreateWVP();
 	cBuffer_->light = vertexResource_->CreateLight();
+	cBuffer_->pointLight = vertexResource_->CreatePointLight();
 	cBuffer_->camera = vertexResource_->CreateCamera();
 }
 
@@ -35,6 +36,7 @@ Object3D::~Object3D() {
 	cBuffer_->phongRefMaterial.reset();
 	cBuffer_->matrix.reset();
 	cBuffer_->light.reset();
+	cBuffer_->pointLight.reset();
 	cBuffer_->camera.reset();
 	cBuffer_.reset();
 }
@@ -53,6 +55,12 @@ void Object3D::Initialize(Camera3D* camera) {
 
 	// ライトの向き
 	lightDirection_ = { 0.0f,-1.0f,0.0f };
+	// ポイントライトの座標
+	pointLightPos_ = { 0.0f,2.0f,0.0f };
+	// ポイントライトの届く最大距離
+	pointLightRadius_ = 5.0f;
+	// ポイントライトの減衰率
+	pointLightDecay_ = 1.0f;
 
 	// アフィン
 	transform_.scale = { 1.0f,1.0f,1.0f };
@@ -87,10 +95,17 @@ void Object3D::Initialize(Camera3D* camera) {
 	cBuffer_->phongRefMaterial->data->specularColor = specularColor_;
 	cBuffer_->phongRefMaterial->data->shininess = shininess_;
 
-	// Light
+	// DirectionalLight
 	cBuffer_->light->data->color = { 1.0f,1.0f,1.0f,1.0f };
 	cBuffer_->light->data->direction = lightDirection_;
-	cBuffer_->light->data->intensity = 1.0f;
+	cBuffer_->light->data->intensity = 0.0f;
+
+	// PointLight
+	cBuffer_->pointLight->data->color = { 1.0f,1.0f,1.0f,1.0f };
+	cBuffer_->pointLight->data->pos = pointLightPos_;
+	cBuffer_->pointLight->data->intensity = 1.0f;
+	cBuffer_->pointLight->data->radius = pointLightRadius_;
+	cBuffer_->pointLight->data->decay = pointLightDecay_;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
@@ -104,29 +119,30 @@ void Object3D::Initialize(Camera3D* camera) {
 
 
 /*////////////////////////////////////////////////////////////////////////////////
-*								    更新処理
+*								ImGui更新処理
 ////////////////////////////////////////////////////////////////////////////////*/
-void Object3D::Update(Camera3D* camera) {
+void Object3D::UpdateImGui(const std::string& objectName) {
 
-	/*----------------------------------------------------------------------------------------------------------------*/
-	/// ImGui
+	ImGui::Begin(objectName.c_str());
 
-	ImGui::Begin("sphere");
-
-	ImGui::ColorEdit4("color", &color_.x);
 	ImGui::ColorEdit3("specularColor", &specularColor_.x);
 	ImGui::DragFloat("shininess", &shininess_, 0.01f);
 	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
 	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
-	ImGui::SliderFloat3("translate", &transform_.translate.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("LightDirection", &lightDirection_.x, -1.0f, 1.0f);
+	ImGui::DragFloat3("translate", &transform_.translate.x, 0.05f, -20.0f, 20.0f);
 	ImGui::Checkbox("enableBlinnPhongReflection", &enableBlinnPhongReflection_);
 
 	ImGui::End();
+}
 
-	/*----------------------------------------------------------------------------------------------------------------*/
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+*								    更新処理
+////////////////////////////////////////////////////////////////////////////////*/
+void Object3D::Update(Camera3D* camera) {
 
 	if (enableBlinnPhongReflection_) {
 
@@ -159,6 +175,11 @@ void Object3D::Update(Camera3D* camera) {
 
 	// Light
 	cBuffer_->light->data->direction = lightDirection_;
+
+	// PointLight
+	cBuffer_->pointLight->data->pos = pointLightPos_;
+	cBuffer_->pointLight->data->radius = pointLightRadius_;
+	cBuffer_->pointLight->data->decay = pointLightDecay_;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;

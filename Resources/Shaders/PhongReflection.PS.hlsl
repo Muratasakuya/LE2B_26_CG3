@@ -22,8 +22,17 @@ struct DirectionalLight {
 	float intensity;
 };
 
+struct PointLight {
+	
+	float4 color;
+	float3 pos;
+	float intensity;
+	float radius;
+	float decay;
+};
+
 struct Camera {
-    
+
 	float3 worldPosition;
 };
 
@@ -35,6 +44,7 @@ struct PixelShaderOutput {
 ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 ConstantBuffer<Camera> gCamera : register(b2);
+ConstantBuffer<PointLight> gPointLight : register(b3);
 
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
@@ -60,29 +70,68 @@ PixelShaderOutput main(VertexShaderOutput input) {
             
 				discard;
 			}
+            // texture‚Ìƒ¿’l‚ª0.0f‚Ì‚ÉPixel‚ğŠü‹p
+			if (textureColor.a == 0.0f) {
+            
+				discard;
+			}
+            
+            // PointLight‚Ì“üËŒõ
+			float3 pointLightDirection = normalize(input.worldPosition - gPointLight.pos);
+            
+            // PointLight‚Ö‚Ì‹——£
+			float distance = length(gPointLight.pos - input.worldPosition);
+            // w”‚É‚æ‚éƒRƒ“ƒgƒ[ƒ‹
+			float factor = pow(saturate(-distance / gPointLight.radius + 1.0f), gPointLight.decay);
             
             // Camera•ûŒüZo
 			float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
             
+            /*-------------------------------------------------------------------------------------------------*/
+            /// DirectionalLight
+            
             // “üËŒõ‚Ì”½ËƒxƒNƒgƒ‹‚ÌŒvZ
-			float3 reflectLight = reflect(normalize(gDirectionalLight.direction), normalize(input.normal));
+			float3 reflectDirectionalLight = reflect(normalize(gDirectionalLight.direction), normalize(input.normal));
             
-			float RdotE = dot(reflectLight, toEye);
-			float specularPow = pow(saturate(RdotE), gMaterial.shininess);
+			float RdotEDirectionalLight = dot(reflectDirectionalLight, toEye);
+			float specularPowDirectionalLight = pow(saturate(RdotEDirectionalLight), gMaterial.shininess);
             
-			float NdotL = dot(normalize(input.normal), normalize(-gDirectionalLight.direction));
-			float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
+			float NdotLDirectionalLight = dot(normalize(input.normal), normalize(-gDirectionalLight.direction));
+			float cosDirectionalLight = pow(NdotLDirectionalLight * 0.5f + 0.5f, 2.0f);
             
             // ŠgU”½Ë
-			float3 diffuse =
-            gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+			float3 diffuseDirectionalLight =
+            gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cosDirectionalLight * gDirectionalLight.intensity;
             
             // ‹¾–Ê”½Ë
-			float3 specular =
-            gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * gMaterial.specularColor;
+			float3 specularDirectionalLight =
+            gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPowDirectionalLight * gMaterial.specularColor;
             
-            // ŠgU”½Ë + ‹¾–Ê”½Ë
-			output.color.rgb = diffuse + specular;
+            /*-------------------------------------------------------------------------------------------------*/
+            /// PointLight
+            
+            // “üËŒõ‚Ì”½ËƒxƒNƒgƒ‹‚ÌŒvZ
+			float3 reflectPointLight = reflect(pointLightDirection, normalize(input.normal));
+            
+			float RdotEPointLight = dot(reflectPointLight, toEye);
+			float specularPowPointLight = pow(saturate(RdotEPointLight), gMaterial.shininess);
+            
+			float NdotLPointLight = dot(normalize(input.normal), -pointLightDirection);
+			float cosPointLight = pow(NdotLPointLight * 0.5f + 0.5f, 2.0f);
+            
+            // ŠgU”½Ë
+			float3 diffusePointLight =
+            gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * cosPointLight * gPointLight.intensity * factor;
+            
+            // ‹¾–Ê”½Ë
+			float3 specularPointLight =
+            gPointLight.color.rgb * gPointLight.intensity * factor * specularPowPointLight * gMaterial.specularColor;
+            
+            /*-------------------------------------------------------------------------------------------------*/
+            
+            // ŠgU”½Ë + ‹¾–Ê”½Ë LightDirecion + PointLight
+			output.color.rgb =
+            diffuseDirectionalLight + specularDirectionalLight + diffusePointLight + specularPointLight;
             
             // ƒ¿
 			output.color.a = gMaterial.color.a * textureColor.a;
@@ -99,30 +148,65 @@ PixelShaderOutput main(VertexShaderOutput input) {
             
 				discard;
 			}
+            // texture‚Ìƒ¿’l‚ª0.0f‚Ì‚ÉPixel‚ğŠü‹p
+			if (textureColor.a == 0.0f) {
+            
+				discard;
+			}
+
+            // PointLight‚Ì“üËŒõ
+			float3 pointLightDirection = normalize(input.worldPosition - gPointLight.pos);
+            
+            // PointLight‚Ö‚Ì‹——£
+			float distance = length(gPointLight.pos - input.worldPosition);
+            
+            // w”‚É‚æ‚éƒRƒ“ƒgƒ[ƒ‹
+			float factor = pow(saturate(-distance / gPointLight.radius + 1.0f), gPointLight.decay);
             
             // Camera•ûŒüZo
 			float3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
             
-            // “üËŒõ‚Ì”½ËƒxƒNƒgƒ‹‚ÌŒvZ
-			float3 reflectLight = reflect(normalize(gDirectionalLight.direction), normalize(input.normal));
+            /*-------------------------------------------------------------------------------------------------*/
+            /// DirectionalLight
+
+			float3 halfVectorDirectionalLight = normalize(normalize(-gDirectionalLight.direction) + toEye);
+			float NDotHDirectionalLight = dot(normalize(input.normal), halfVectorDirectionalLight);
+			float specularPowDirectionalLight = pow(saturate(NDotHDirectionalLight), gMaterial.shininess);
             
-			float3 halfVector = normalize(normalize(-gDirectionalLight.direction) + toEye);
-			float NDotH = dot(normalize(input.normal), halfVector);
-			float specularPow = pow(saturate(NDotH), gMaterial.shininess);
-            
-			float NdotL = dot(normalize(input.normal), normalize(-gDirectionalLight.direction));
-			float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
+			float NdotLDirectionalLight = dot(normalize(input.normal), normalize(-gDirectionalLight.direction));
+			float cosDirectionalLight = pow(NdotLDirectionalLight * 0.5f + 0.5f, 2.0f);
             
             // ŠgU”½Ë
-			float3 diffuse =
-            gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+			float3 diffuseDirectionalLight =
+            gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cosDirectionalLight * gDirectionalLight.intensity;
             
             // ‹¾–Ê”½Ë
-			float3 specular =
-            gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * gMaterial.specularColor;
+			float3 specularDirectionalLight =
+            gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPowDirectionalLight * gMaterial.specularColor;
             
-            // ŠgU”½Ë + ‹¾–Ê”½Ë
-			output.color.rgb = diffuse + specular;
+             /*-------------------------------------------------------------------------------------------------*/
+            /// PointLight
+            
+			float3 halfVectorPointLight = normalize(-pointLightDirection + toEye);
+			float NDotHPointLight = dot(normalize(input.normal), halfVectorPointLight);
+			float specularPowPointLight = pow(saturate(NDotHPointLight), gMaterial.shininess);
+            
+			float NdotLPointLight = dot(normalize(input.normal), -pointLightDirection);
+			float cosPointLight = pow(NdotLPointLight * 0.5f + 0.5f, 2.0f);
+            
+            // ŠgU”½Ë
+			float3 diffusePointLight =
+            gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * cosPointLight * gPointLight.intensity * factor;
+            
+            // ‹¾–Ê”½Ë
+			float3 specularPointLight =
+            gPointLight.color.rgb * gPointLight.intensity * factor * specularPowPointLight * gMaterial.specularColor;
+            
+            /*-------------------------------------------------------------------------------------------------*/
+            
+            // ŠgU”½Ë + ‹¾–Ê”½Ë LightDirecion + PointLight
+			output.color.rgb =
+            diffuseDirectionalLight + specularDirectionalLight + diffusePointLight + specularPointLight;
             
             // ƒ¿
 			output.color.a = gMaterial.color.a * textureColor.a;
@@ -135,14 +219,25 @@ PixelShaderOutput main(VertexShaderOutput input) {
    /*=================================================================================================*/
 	else {
         
-         // texture‚Ìƒ¿’l‚ª0.5fˆÈ‰º‚Ì‚ÉPixel‚ğŠü‹p
+        // texture‚Ìƒ¿’l‚ª0.5fˆÈ‰º‚Ì‚ÉPixel‚ğŠü‹p
 		if (textureColor.a <= 0.5f) {
+            
+			discard;
+		}
+        // texture‚Ìƒ¿’l‚ª0.0f‚Ì‚ÉPixel‚ğŠü‹p
+		if (textureColor.a == 0.0f) {
             
 			discard;
 		}
         
 		output.color = gMaterial.color * textureColor;
 	}
-        
+    
+     // texture‚Ìƒ¿’l‚ª0.0f‚Ì‚ÉPixel‚ğŠü‹p
+	if (output.color.a == 0.0f) {
+            
+		discard;
+	}
+    
 	return output;
 }

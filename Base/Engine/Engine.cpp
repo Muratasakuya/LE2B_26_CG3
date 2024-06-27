@@ -209,12 +209,16 @@ void Engine::DrawSphere(const CBufferData* cBufferData, const std::string textur
 	if (pipelineType == Texture) {
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
+		// pointLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->light->resource->GetGPUVirtualAddress());
 	}
 	if (pipelineType == PhongReflection) {
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->phongRefMaterial->resource->GetGPUVirtualAddress());
 		// light用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->camera->resource->GetGPUVirtualAddress());
+		// pointLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->pointLight->resource->GetGPUVirtualAddress());
 	}
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
@@ -235,13 +239,23 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
 	modelManger_->IASetVertexBuffers(commandList.Get(), modelName);
-	// マテリアルCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
+	// light用のCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
 	if (pipelineType == Texture) {
+		// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
+		// pointLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->light->resource->GetGPUVirtualAddress());
+	}
+	if (pipelineType == PhongReflection) {
+		// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->phongRefMaterial->resource->GetGPUVirtualAddress());
 		// light用のCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->camera->resource->GetGPUVirtualAddress());
+		// pointLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->pointLight->resource->GetGPUVirtualAddress());
 	}
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
@@ -272,7 +286,7 @@ void Engine::DrawParticle(
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
 	// instacning
 	commandList->SetGraphicsRootDescriptorTable(3, gpuHandle);
-	
+
 	// DrawCall
 	commandList->DrawInstanced(vertexNum, instanceCount, 0, 0);
 }

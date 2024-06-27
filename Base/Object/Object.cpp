@@ -25,6 +25,24 @@ void Object::SetEnableBlinnPhongReflection(bool enableBlinnPhongReflection) {
 	enableBlinnPhongReflection_ = enableBlinnPhongReflection;
 }
 
+// pointLightPos_ = pointLightPos setter
+void Object::SetPointLightPos(Vector3 pointLightPos) {
+
+	pointLightPos_ = pointLightPos;
+}
+
+// pointLightRadius_ = pointLightRadius setter
+void Object::SetPointLightRadius(float pointLightRadius) {
+
+	pointLightRadius_ = pointLightRadius;
+}
+
+// pointLightDecay_ = pointLightDeacy setter
+void Object::SetPointLightDecay(float pointLightDeacy) {
+
+	pointLightDecay_ = pointLightDeacy;
+}
+
 // transform_.scale = scale setter
 void Object::SetScale(Vector3 scale) {
 

@@ -22,6 +22,8 @@ public:
 
 	void Initialize(Camera3D* camera);
 
+	void UpdateImGui(const std::string& objectName);
+
 	void Update(Camera3D* camera);
 
 	void Draw(PipelineType pipelineType, BlendMode blendMode, const std::string& textureName, const std::optional<std::string>& modelName = std::nullopt);

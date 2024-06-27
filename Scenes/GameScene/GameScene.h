@@ -58,6 +58,13 @@ private:
 	/*----------------------------------------------------------------------*/
 	// 3Dオブジェクト
 
+	// ポイントライト座標
+	Vector3 pointLightPos_;
+	// ポイントライトの届く最大距離
+	float pointLightRadius_;
+	// ポイントライトの減衰率
+	float pointLightDecay_;
+
 	/*----------------------------------------------------------------------*/
 	// 球
 
@@ -72,5 +79,22 @@ private:
 
 	// テクスチャの名前
 	std::string sphereTextureName_;
+
+	/*----------------------------------------------------------------------*/
+	// terrain
+
+	// インスタンス
+	std::unique_ptr<Object3D> terrain_;
+
+	// 描画タイプ
+	PipelineType terrainDrawType_;
+
+	// ブレンドモード
+	BlendMode terrainBlendMode_;
+
+	// モデルの名前
+	std::string terrainModelName_;
+	// テクスチャの名前
+	std::string terrainTextureName_;
 
 };

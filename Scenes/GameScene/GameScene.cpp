@@ -36,6 +36,13 @@ GameScene::GameScene() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
+	// ポイントライト座標
+	pointLightPos_ = { 0.0f,2.0f,0.0f };
+	// ポイントライトの届く最大距離
+	pointLightRadius_ = 5.0f;
+	// ポイントライトの減衰率
+	pointLightDecay_ = 1.0f;;
+
 	/*--------------------------------------------*/
 	/*  Sphere 球  */
 
@@ -59,6 +66,33 @@ GameScene::GameScene() {
 	TextureManager::GetInstance()->LoadTexture("./Resources/Images/monsterBall.png");
 	sphereTextureName_ = "monsterBall";
 
+	/*--------------------------------------------*/
+	/*  terrain 地形  */
+
+	// 生成
+	terrain_ = std::make_unique<Object3D>(Object3DType::Model);
+
+	// 初期化
+	terrain_->Initialize(camera3D_.get());
+
+	// Lighting設定
+	terrain_->SetEnableLighting(true);
+	terrain_->SetEnableBlinnPhongReflection(true);
+
+	// 描画タイプ
+	terrainDrawType_ = PhongReflection;
+
+	// ブレンドモード
+	terrainBlendMode_ = kBlendModeNormal;
+
+	// モデル読み込み
+	ModelManager::GetInstance()->LoadModel("./Resources/Obj", "terrain.obj");
+	terrainModelName_ = "terrain";
+
+	// テクスチャ読み込み
+	TextureManager::GetInstance()->LoadTexture("./Resources/Images/grass.png");
+	terrainTextureName_ = "grass";
+
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +103,7 @@ GameScene::~GameScene() {
 	camera2D_.reset();
 	camera3D_.reset();
 	sphere_.reset();
+	terrain_.reset();
 }
 
 
@@ -98,6 +133,9 @@ void GameScene::Initialize() {
 	// 球
 	sphere_->Initialize(camera3D_.get());
 
+	// 地形
+	terrain_->Initialize(camera3D_.get());
+
 }
 
 
@@ -125,8 +163,33 @@ void GameScene::Update() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
+	ImGui::Begin("PointLight");
+
+	ImGui::DragFloat3("pos", &pointLightPos_.x, 0.05f, -10.0f, 10.0f);
+	ImGui::DragFloat("radius", &pointLightRadius_, 0.01f);
+	ImGui::DragFloat("decay", &pointLightDecay_, 0.01f, 0.0f, 20.0f);
+
+	ImGui::End();
+
+	// 減衰率の制御
+	if (pointLightDecay_ <= 0.0f) {
+
+		pointLightDecay_ = 0.0f;
+	}
+
 	// 球
+	sphere_->UpdateImGui("sphere");
+	sphere_->SetPointLightPos(pointLightPos_);
+	sphere_->SetPointLightRadius(pointLightRadius_);
+	sphere_->SetPointLightDecay(pointLightDecay_);
 	sphere_->Update(camera3D_.get());
+
+	// 地形
+	terrain_->UpdateImGui("terrain");
+	terrain_->SetPointLightPos(pointLightPos_);
+	terrain_->SetPointLightRadius(pointLightRadius_);
+	terrain_->SetPointLightDecay(pointLightDecay_);
+	terrain_->Update(camera3D_.get());
 
 }
 
@@ -146,6 +209,10 @@ void GameScene::Draw() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
+	// 地形
+	terrain_->Draw(terrainDrawType_, terrainBlendMode_, terrainTextureName_, terrainModelName_);
+
+	// 球
 	sphere_->Draw(sphereDrawType_, sphereBlendMode_, sphereTextureName_);
 
 }
