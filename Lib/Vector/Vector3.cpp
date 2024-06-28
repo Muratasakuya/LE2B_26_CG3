@@ -73,3 +73,22 @@ Vector3 Vector3::CalculateTriangleNormal(const Vector4& v0, const Vector4& v1, c
 
 	return normal;
 }
+
+// ノルム
+float Vector3::Length(const Vector3& v) {
+
+	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+// 正規化
+Vector3 Vector3::Normalize(const Vector3& v) {
+
+	float length = Length(v);
+	if (length != 0) {
+		return Vector3(v.x / length, v.y / length, v.z / length);
+	} else {
+
+		// 値が入ってなければnullで返す
+		return Vector3(0.0f, 0.0f, 0.0f);
+	}
+}

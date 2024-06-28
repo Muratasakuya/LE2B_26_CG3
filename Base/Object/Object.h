@@ -39,9 +39,11 @@ public:
 	void SetEnableHalfLambert(bool enableHalfLambert);
 	void SetEnablePhongReflection(bool enablePhongReflection);
 	void SetEnableBlinnPhongReflection(bool enableBlinnPhongReflection);
-	void SetPointLightPos(Vector3 pointLightPos);
-	void SetPointLightRadius(float pointLightRadius);
-	void SetPointLightDecay(float pointLightDeacy);
+
+	void SetPointLight(PointLight pointLight);
+
+	void SetSpotLight(SpotLight spotLight);
+
 	void SetScale(Vector3 scale);
 	void SetRotate(Vector3 rotate);
 	void SetTranslate(Vector3 translate);
@@ -69,12 +71,11 @@ protected:
 
 	// ライトの向き
 	Vector3 lightDirection_{};
-	// ポイントライトの座標
-	Vector3 pointLightPos_{};
-	// ポイントライトの届く最大距離
-	float pointLightRadius_{};
-	// ポイントライトの減衰率
-	float pointLightDecay_{};
+	// ポイントライト
+	PointLight pointLight_{};
+	// スポットライト
+	SpotLight spotLight_{};
+
 	// Lightingの有無
 	bool enableLighting_{};
 	// HalfLambertの有無

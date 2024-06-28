@@ -26,6 +26,17 @@ struct PointLight {
 	float intensity;
 };
 
+struct SpotLight {
+
+	float4 color;
+	float3 pos;
+	float intensity;
+	float3 direction;
+	float distance;
+	float decay;
+	float cosAngle;
+};
+
 struct PixelShaderOutput {
     
 	float4 color : SV_TARGET0;
@@ -34,6 +45,7 @@ struct PixelShaderOutput {
 ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 ConstantBuffer<PointLight> gPointLight : register(b2);
+ConstantBuffer<SpotLight> gSpotLight : register(b3);
 
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);

@@ -24,6 +24,7 @@ Object3D::Object3D(Object3DType objectType) {
 	cBuffer_->matrix = vertexResource_->CreateWVP();
 	cBuffer_->light = vertexResource_->CreateLight();
 	cBuffer_->pointLight = vertexResource_->CreatePointLight();
+	cBuffer_->spotLight = vertexResource_->CreateSpotLight();
 	cBuffer_->camera = vertexResource_->CreateCamera();
 }
 
@@ -37,6 +38,7 @@ Object3D::~Object3D() {
 	cBuffer_->matrix.reset();
 	cBuffer_->light.reset();
 	cBuffer_->pointLight.reset();
+	cBuffer_->spotLight.reset();
 	cBuffer_->camera.reset();
 	cBuffer_.reset();
 }
@@ -55,12 +57,22 @@ void Object3D::Initialize(Camera3D* camera) {
 
 	// ライトの向き
 	lightDirection_ = { 0.0f,-1.0f,0.0f };
-	// ポイントライトの座標
-	pointLightPos_ = { 0.0f,2.0f,0.0f };
-	// ポイントライトの届く最大距離
-	pointLightRadius_ = 5.0f;
-	// ポイントライトの減衰率
-	pointLightDecay_ = 1.0f;
+
+	// ポイントライト
+	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	pointLight_.pos = { 0.0f,2.0f,0.0f };
+	pointLight_.intensity = 0.0f;
+	pointLight_.radius = 5.0f;
+	pointLight_.decay = 1.0f;
+
+	// スポットライト
+	spotLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	spotLight_.pos = { 2.0f,1.25f,0.0f };
+	spotLight_.distance = 7.0f;
+	spotLight_.direction = Vector3::Normalize({ -1.0f,-1.0f,0.0 });
+	spotLight_.intensity = 4.0f;
+	spotLight_.decay = 2.0f;
+	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 
 	// アフィン
 	transform_.scale = { 1.0f,1.0f,1.0f };
@@ -101,11 +113,10 @@ void Object3D::Initialize(Camera3D* camera) {
 	cBuffer_->light->data->intensity = 0.0f;
 
 	// PointLight
-	cBuffer_->pointLight->data->color = { 1.0f,1.0f,1.0f,1.0f };
-	cBuffer_->pointLight->data->pos = pointLightPos_;
-	cBuffer_->pointLight->data->intensity = 1.0f;
-	cBuffer_->pointLight->data->radius = pointLightRadius_;
-	cBuffer_->pointLight->data->decay = pointLightDecay_;
+	cBuffer_->pointLight->data = &pointLight_;
+
+	// SpotLight
+	cBuffer_->spotLight->data = &spotLight_;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
@@ -177,9 +188,10 @@ void Object3D::Update(Camera3D* camera) {
 	cBuffer_->light->data->direction = lightDirection_;
 
 	// PointLight
-	cBuffer_->pointLight->data->pos = pointLightPos_;
-	cBuffer_->pointLight->data->radius = pointLightRadius_;
-	cBuffer_->pointLight->data->decay = pointLightDecay_;
+	cBuffer_->pointLight->data = &pointLight_;
+
+	// SpotLight
+	cBuffer_->spotLight->data = &spotLight_;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;

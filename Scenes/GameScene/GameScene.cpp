@@ -36,12 +36,21 @@ GameScene::GameScene() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// ポイントライト座標
-	pointLightPos_ = { 0.0f,2.0f,0.0f };
-	// ポイントライトの届く最大距離
-	pointLightRadius_ = 5.0f;
-	// ポイントライトの減衰率
-	pointLightDecay_ = 1.0f;;
+	// ポイントライト
+	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	pointLight_.pos = { 0.0f,2.0f,0.0f };
+	pointLight_.intensity = 0.0f;
+	pointLight_.radius = 5.0f;
+	pointLight_.decay = 1.0f;
+
+	// スポットライト
+	spotLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	spotLight_.pos = { 2.0f,1.25f,0.0f };
+	spotLight_.distance = 7.0f;
+	spotLight_.direction = Vector3::Normalize({ -1.0f,-1.0f,0.0 });
+	spotLight_.intensity = 4.0f;
+	spotLight_.decay = 2.0f;
+	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 
 	/*--------------------------------------------*/
 	/*  Sphere 球  */
@@ -165,30 +174,41 @@ void GameScene::Update() {
 
 	ImGui::Begin("PointLight");
 
-	ImGui::DragFloat3("pos", &pointLightPos_.x, 0.05f, -10.0f, 10.0f);
-	ImGui::DragFloat("radius", &pointLightRadius_, 0.01f);
-	ImGui::DragFloat("decay", &pointLightDecay_, 0.01f, 0.0f, 20.0f);
+	ImGui::DragFloat3("pos", &pointLight_.pos.x, 0.05f, -10.0f, 10.0f);
+	ImGui::DragFloat("radius", &pointLight_.radius, 0.01f);
+	ImGui::DragFloat("decay", &pointLight_.decay, 0.01f, 0.0f, 20.0f);
+
+	ImGui::End();
+
+	ImGui::Begin("SpotLight");
+
+	ImGui::DragFloat3("pos", &spotLight_.pos.x, 0.05f, -10.0f, 10.0f);
+	ImGui::DragFloat("radius", &spotLight_.distance, 0.01f);
+	ImGui::DragFloat("decay", &spotLight_.decay, 0.01f, 0.0f, 20.0f);
 
 	ImGui::End();
 
 	// 減衰率の制御
-	if (pointLightDecay_ <= 0.0f) {
+	if (pointLight_.decay <= 0.0f) {
 
-		pointLightDecay_ = 0.0f;
+		pointLight_.decay = 0.0f;
+	}
+
+	if (spotLight_.decay <= 0.0f) {
+
+		spotLight_.decay = 0.0f;
 	}
 
 	// 球
 	sphere_->UpdateImGui("sphere");
-	sphere_->SetPointLightPos(pointLightPos_);
-	sphere_->SetPointLightRadius(pointLightRadius_);
-	sphere_->SetPointLightDecay(pointLightDecay_);
+	sphere_->SetPointLight(pointLight_);
+	sphere_->SetSpotLight(spotLight_);
 	sphere_->Update(camera3D_.get());
 
 	// 地形
 	terrain_->UpdateImGui("terrain");
-	terrain_->SetPointLightPos(pointLightPos_);
-	terrain_->SetPointLightRadius(pointLightRadius_);
-	terrain_->SetPointLightDecay(pointLightDecay_);
+	terrain_->SetPointLight(pointLight_);
+	terrain_->SetSpotLight(spotLight_);
 	terrain_->Update(camera3D_.get());
 
 }

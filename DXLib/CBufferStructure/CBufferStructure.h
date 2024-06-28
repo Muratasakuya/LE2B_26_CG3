@@ -122,6 +122,19 @@ struct PointLight {
 	float padding[2];
 };
 
+// スポットライト構造体 懐中電灯のようなもの
+struct SpotLight {
+
+	Vector4 color;
+	Vector3 pos;
+	float intensity;
+	Vector3 direction;
+	float distance;
+	float decay;
+	float cosAngle;
+	float padding[2];
+};
+
 // カメラワールド座標構造体
 struct CameraForGPU {
 
@@ -200,6 +213,16 @@ struct CBPointLightData {
 	PointLight* data = nullptr;
 };
 
+// CBスポットライトデータ
+struct CBSpotLightData {
+
+	// SpotLight
+	ComPtr<ID3D12Resource> resource;
+
+	// SpotLight
+	SpotLight* data = nullptr;
+};
+
 // CBカメラデータ
 struct CBCameraData {
 
@@ -219,5 +242,6 @@ struct CBufferData {
 	std::unique_ptr<CBParticleTransformData> particleMatrix;
 	std::unique_ptr<CBLightData> light;
 	std::unique_ptr<CBPointLightData> pointLight;
+	std::unique_ptr<CBSpotLightData> spotLight;
 	std::unique_ptr<CBCameraData> camera;
 };

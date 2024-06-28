@@ -210,7 +210,9 @@ void Engine::DrawSphere(const CBufferData* cBufferData, const std::string textur
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->light->resource->GetGPUVirtualAddress());
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->pointLight->resource->GetGPUVirtualAddress());
+		// spotLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->spotLight->resource->GetGPUVirtualAddress());
 	}
 	if (pipelineType == PhongReflection) {
 		// マテリアルCBufferの場所を設定
@@ -219,6 +221,8 @@ void Engine::DrawSphere(const CBufferData* cBufferData, const std::string textur
 		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->camera->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->pointLight->resource->GetGPUVirtualAddress());
+		// spotLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(6, cBufferData->spotLight->resource->GetGPUVirtualAddress());
 	}
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
@@ -247,7 +251,9 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->light->resource->GetGPUVirtualAddress());
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->pointLight->resource->GetGPUVirtualAddress());
+		// spotLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->spotLight->resource->GetGPUVirtualAddress());
 	}
 	if (pipelineType == PhongReflection) {
 		// マテリアルCBufferの場所を設定
@@ -256,6 +262,8 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->camera->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->pointLight->resource->GetGPUVirtualAddress());
+		// spotLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(6, cBufferData->spotLight->resource->GetGPUVirtualAddress());
 	}
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);

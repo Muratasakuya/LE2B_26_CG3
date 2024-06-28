@@ -208,6 +208,33 @@ std::unique_ptr<CBPointLightData> VertexResource::CreatePointLight() {
 
 
 
+/*////////////////////////////////////////////////////////////////////////////////
+
+*								SpotLightデータの生成
+
+////////////////////////////////////////////////////////////////////////////////*/
+std::unique_ptr<CBSpotLightData> VertexResource::CreateSpotLight() {
+
+
+	DXCommon* dxCommon = DXCommon::GetInstance();
+
+	HRESULT hr;
+	std::unique_ptr<CBSpotLightData> spotLight = std::make_unique<CBSpotLightData>();
+
+	// SpotLightの生成
+	spotLight->resource = CreateBufferResource(dxCommon->GetDevice(), sizeof(SpotLight));
+
+	// SpotLightデータのマッピング
+	hr = spotLight->resource->Map(0, nullptr, reinterpret_cast<void**>(&spotLight->data));
+
+	// 作れなければエラー
+	assert(SUCCEEDED(hr));
+
+	return spotLight;
+}
+
+
+
 
 /*////////////////////////////////////////////////////////////////////////////////
 
