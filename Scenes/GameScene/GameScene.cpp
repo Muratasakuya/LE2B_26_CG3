@@ -51,6 +51,7 @@ GameScene::GameScene() {
 	spotLight_.intensity = 4.0f;
 	spotLight_.decay = 2.0f;
 	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
+	spotLight_.cosFalloffStart = 1.0f;
 
 	/*--------------------------------------------*/
 	/*  Sphere 球  */
@@ -174,7 +175,9 @@ void GameScene::Update() {
 
 	ImGui::Begin("PointLight");
 
+	ImGui::ColorEdit3("color", &pointLight_.color.x);
 	ImGui::DragFloat3("pos", &pointLight_.pos.x, 0.05f, -10.0f, 10.0f);
+	ImGui::DragFloat("intensity", &pointLight_.intensity, 0.05f);
 	ImGui::DragFloat("radius", &pointLight_.radius, 0.01f);
 	ImGui::DragFloat("decay", &pointLight_.decay, 0.01f, 0.0f, 20.0f);
 
@@ -182,8 +185,11 @@ void GameScene::Update() {
 
 	ImGui::Begin("SpotLight");
 
+	ImGui::ColorEdit3("color", &spotLight_.color.x);
 	ImGui::DragFloat3("pos", &spotLight_.pos.x, 0.05f, -10.0f, 10.0f);
-	ImGui::DragFloat("radius", &spotLight_.distance, 0.01f);
+	ImGui::DragFloat("intensity", &spotLight_.intensity, 0.05f);
+	ImGui::DragFloat("distance", &spotLight_.distance, 0.01f);
+	ImGui::DragFloat("cosFalloffStart", &spotLight_.cosFalloffStart, 0.01f, 0.5f, 5.0f);
 	ImGui::DragFloat("decay", &spotLight_.decay, 0.01f, 0.0f, 20.0f);
 
 	ImGui::End();

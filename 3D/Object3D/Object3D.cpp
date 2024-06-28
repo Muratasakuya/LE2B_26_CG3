@@ -73,6 +73,7 @@ void Object3D::Initialize(Camera3D* camera) {
 	spotLight_.intensity = 4.0f;
 	spotLight_.decay = 2.0f;
 	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
+	spotLight_.cosFalloffStart = 1.0f;
 
 	// アフィン
 	transform_.scale = { 1.0f,1.0f,1.0f };
@@ -113,10 +114,21 @@ void Object3D::Initialize(Camera3D* camera) {
 	cBuffer_->light->data->intensity = 0.0f;
 
 	// PointLight
-	cBuffer_->pointLight->data = &pointLight_;
+	cBuffer_->pointLight->data->color = pointLight_.color;
+	cBuffer_->pointLight->data->pos = pointLight_.pos;
+	cBuffer_->pointLight->data->intensity = pointLight_.intensity;
+	cBuffer_->pointLight->data->radius = pointLight_.radius;
+	cBuffer_->pointLight->data->decay = pointLight_.decay;
 
 	// SpotLight
-	cBuffer_->spotLight->data = &spotLight_;
+	cBuffer_->spotLight->data->color = spotLight_.color;
+	cBuffer_->spotLight->data->pos = spotLight_.pos;
+	cBuffer_->spotLight->data->direction = spotLight_.direction;
+	cBuffer_->spotLight->data->distance = spotLight_.distance;
+	cBuffer_->spotLight->data->intensity = spotLight_.intensity;
+	cBuffer_->spotLight->data->cosAngle = spotLight_.cosAngle;
+	cBuffer_->spotLight->data->cosFalloffStart = spotLight_.cosFalloffStart;
+	cBuffer_->spotLight->data->decay = spotLight_.decay;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;
@@ -188,10 +200,21 @@ void Object3D::Update(Camera3D* camera) {
 	cBuffer_->light->data->direction = lightDirection_;
 
 	// PointLight
-	cBuffer_->pointLight->data = &pointLight_;
+	cBuffer_->pointLight->data->color = pointLight_.color;
+	cBuffer_->pointLight->data->pos = pointLight_.pos;
+	cBuffer_->pointLight->data->intensity = pointLight_.intensity;
+	cBuffer_->pointLight->data->radius = pointLight_.radius;
+	cBuffer_->pointLight->data->decay = pointLight_.decay;
 
 	// SpotLight
-	cBuffer_->spotLight->data = &spotLight_;
+	cBuffer_->spotLight->data->color = spotLight_.color;
+	cBuffer_->spotLight->data->pos = spotLight_.pos;
+	cBuffer_->spotLight->data->direction = spotLight_.direction;
+	cBuffer_->spotLight->data->distance = spotLight_.distance;
+	cBuffer_->spotLight->data->intensity = spotLight_.intensity;
+	cBuffer_->spotLight->data->cosAngle = spotLight_.cosAngle;
+	cBuffer_->spotLight->data->cosFalloffStart = spotLight_.cosFalloffStart;
+	cBuffer_->spotLight->data->decay = spotLight_.decay;
 
 	// Matrix
 	cBuffer_->matrix->data->World = matrix_.World;

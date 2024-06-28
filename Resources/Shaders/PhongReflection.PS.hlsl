@@ -40,6 +40,7 @@ struct SpotLight {
 	float distance;
 	float decay;
 	float cosAngle;
+	float cosFalloffStart;
 };
 
 struct Camera {
@@ -160,7 +161,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
 			float cosSpotLight = pow(NdotLSpotLight * 0.5f + 0.5f, 2.0f);
             
 			float cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
-			float falloffFactor = saturate((cosAngle - gSpotLight.cosAngle) / (1.0f - gSpotLight.cosAngle));
+			float falloffFactor = saturate((cosAngle - gSpotLight.cosAngle) / (gSpotLight.cosFalloffStart - gSpotLight.cosAngle));
             
             // ŠgŽU”½ŽË
 			float3 diffuseSpotLight =
@@ -263,7 +264,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
 			float cosSpotLight = pow(NdotLSpotLight * 0.5f + 0.5f, 2.0f);
             
 			float cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
-			float falloffFactor = saturate((cosAngle - gSpotLight.cosAngle) / (1.0f - gSpotLight.cosAngle));
+			float falloffFactor = saturate((cosAngle - gSpotLight.cosAngle) / (gSpotLight.cosFalloffStart - gSpotLight.cosAngle));
             
             // ŠgŽU”½ŽË
 			float3 diffuseSpotLight =
