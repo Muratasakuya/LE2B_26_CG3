@@ -54,7 +54,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Particle;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/PunctualLight;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Particle;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/PunctualLight;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/assimp/include;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -62,6 +62,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/ignore:4049 /ignore:4098 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalLibraryDirectories>$(ProjectDir)/Externals/assimp/lib/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -81,7 +83,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Particle;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/PunctualLight;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/Scenes/GameScene;$(ProjectDir)/Scenes/IScene;$(ProjectDir)/2D/Object2D;$(ProjectDir)/2D/Sprite;$(ProjectDir)/3D/Particle;$(ProjectDir)/3D/Model;$(ProjectDir)/3D/Mesh;$(ProjectDir)/3D/Object3D;$(ProjectDir)/Managers/ModelManager;$(ProjectDir)/Managers/TextureManager;$(ProjectDir)/Managers/SceneManager;$(ProjectDir)/Managers/PipelineManager;$(ProjectDir)/Managers/ImGuiManager;$(ProjectDir)/Lib/Camera2D;$(ProjectDir)/Lib/Camera3D;$(ProjectDir)/Lib/Matrix;$(ProjectDir)/Lib/Vector;$(ProjectDir)/Lib/ComPtr;$(ProjectDir)/Lib/Logger;$(ProjectDir)/DXLib/PunctualLight;$(ProjectDir)/DXLib/VertexResource;$(ProjectDir)/DXLib/CBufferStructure;$(ProjectDir)/DXLib/DXDepthStencil;$(ProjectDir)/DXLib/DXRasterizerState;$(ProjectDir)/DXLib/DXBlendState;$(ProjectDir)/DXLib/DXInputLayout;$(ProjectDir)/DXLib/DXRootSignature;$(ProjectDir)/DXLib/DXSwapChain;$(ProjectDir)/DXLib/DXDescriptor;$(ProjectDir)/DXLib/DXInclude;$(ProjectDir)/DXLib/DXDevice;$(ProjectDir)/DXLib/DXObject;$(ProjectDir)/Base/Object;$(ProjectDir)/Base/Engine;$(ProjectDir)/Base/DXCommon;$(ProjectDir)/Base/WinApp;$(ProjectDir)/Externals/assimp/include;$(ProjectDir)/Externals/DirectXTex;$(ProjectDir)/Externals/imgui</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -91,6 +93,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/ignore:4049 /ignore:4098 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalLibraryDirectories>$(ProjectDir)/Externals/assimp/lib/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"

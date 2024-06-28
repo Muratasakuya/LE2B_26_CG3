@@ -66,91 +66,70 @@ ModelData ModelManager::LoadObjFile(const std::string& directoryPath, const std:
 	std::vector<Vector2> texcoords; // テクスチャ座標
 	std::string line;               // ファイルから読んだ1行を格納するもの
 
-	// ファイルを開く
-	std::ifstream file(directoryPath + "/" + filename);
-	// 開けなかったら止める
-	assert(file.is_open());
+	Assimp::Importer impoter;
+	std::string filePath = directoryPath + "/" + filename;
+	const aiScene* scene = impoter.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 
-	while (std::getline(file, line)) {
+	// メッシュがないのには対応しない
+	assert(scene->HasMeshes());
 
-		std::string identifier;
-		std::istringstream s(line);
-		s >> identifier;            // 先頭の識別子を読む
+	// メッシュ解析
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 
-		// identifierに応じた処理
-		// v = 頂点位置
-		// vt = 頂点テクスチャ座標
-		// vn = 頂点法線
-		// f = 面
-		if (identifier == "v") {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
 
-			Vector4 position;
-			s >> position.x >> position.y >> position.z;
-			// X軸を反転
-			position.x *= -1.0f;
-			position.w = 1.0f;
-			positions.push_back(position);
-		} else if (identifier == "vt") {
+		// 法線がないMeshは今回は非対応
+		assert(mesh->HasNormals());
 
-			Vector2 texcoord;
-			s >> texcoord.x >> texcoord.y;
-			// Y軸を反転
-			texcoord.y = 1.0f - texcoord.y;
-			texcoords.push_back(texcoord);
-		} else if (identifier == "vn") {
+		// TexcoordがないMeshは今回は非対応
+		assert(mesh->HasTextureCoords(0));
 
-			Vector3 normal;
-			s >> normal.x >> normal.y >> normal.z;
-			// X軸を反転
-			normal.x *= -1.0f;
-			normals.push_back(normal);
-		} else if (identifier == "f") {
+		// face解析
+		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 
-			VertexData triangle[3];
+			aiFace& face = mesh->mFaces[faceIndex];
 
-			// 面は三角形限定、その他は未対応
-			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
+			// 三角形のみサポート
+			assert(face.mNumIndices == 3);
 
-				std::string vertexDefinition;
-				s >> vertexDefinition;
-				// 頂点要素へのIndexは「位置/UV/法線」で格納されているので、分解してIndexを取得する
-				std::istringstream v(vertexDefinition);
-				uint32_t elementIndices[3] = { 0,0,0 };
-				for (int32_t element = 0; element < 3; ++element) {
+			// vertex解析
+			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 
-					std::string index;
-					// 区切りでIndexを読む
-					std::getline(v, index, '/');
+				uint32_t vertexIndex = face.mIndices[element];
+				aiVector3D& position = mesh->mVertices[vertexIndex];
+				aiVector3D& normal = mesh->mNormals[vertexIndex];
+				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 
-					if (!index.empty()) {
+				VertexData vertex;
 
-						elementIndices[element] = std::stoi(index);
-					}
-				}
+				vertex.pos = { position.x,position.y,position.z,1.0f };
+				vertex.normal = { normal.x,normal.y,normal.z };
+				vertex.texcoord = { texcoord.x,texcoord.y };
 
-				// 要素へのIndexから、実際の要素の値を取得して、頂点は構築する
-				Vector4 position = positions[elementIndices[0] - 1];
-				//Vector2 texcoord = texcoords[elementIndices[1] - 1];
-				Vector2 texcoord = elementIndices[1] > 0 ? texcoords[elementIndices[1] - 1] : Vector2(0.0f, 0.0f);
-				Vector3 normal = normals[elementIndices[2] - 1];
+				// aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
+				vertex.pos.x *= -1.0f;
+				vertex.normal.x *= -1.0f;
 
-				triangle[faceVertex] = { position,texcoord,normal };
+				modelData.vertices.push_back(vertex);
 			}
-
-			// 頂点を逆順で登録して回り順を逆にする
-			modelData.vertices.push_back(triangle[2]);
-			modelData.vertices.push_back(triangle[1]);
-			modelData.vertices.push_back(triangle[0]);
-		} else if (identifier == "mtllib") {
-
-			// materialTemplateLibraryファイルの名前を取得する
-			std::string materialFilename;
-			s >> materialFilename;
-
-			// 基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
-			modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
 		}
 	}
+
+	// material解析
+	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
+
+		aiMaterial* material = scene->mMaterials[materialIndex];
+
+		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
+
+			aiString textureFilePath;
+
+			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
+			modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+		}
+	}
+
+	// 今のクラス設計上textureはTextureManagerで読んで使っているどっちがいいかはこれから要相談
 
 	return modelData;
 }

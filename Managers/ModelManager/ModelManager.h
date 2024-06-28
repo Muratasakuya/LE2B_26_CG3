@@ -5,6 +5,11 @@
 #include "CBufferStructure.h"
 #include "VertexResource.h"
 
+// assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 // 3D
 #include "Model.h"
 
