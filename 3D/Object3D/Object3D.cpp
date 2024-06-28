@@ -5,6 +5,19 @@
 
 #include "Camera3D.h"
 #include "ImGuiManager.h"
+#include "ModelManager.h"
+
+
+
+// isUseGltfModel_ = useGltfModel, gltfModelName_ = modelName setter
+void Object3D::SetIsUseGLTFModel(bool useGltfModel, const std::string& modelName) {
+
+	isUseGltfModel_ = useGltfModel;
+	if (isUseGltfModel_) {
+
+		gltfModelName_ = modelName;
+	}
+}
 
 
 
@@ -85,6 +98,10 @@ void Object3D::Initialize(Camera3D* camera) {
 	enablePhongReflection_ = false;
 	enableBlinnPhongReflection_ = false;
 
+	// デフォルトはfalse
+	isUseGltfModel_ = false;
+	gltfModelName_ = "";
+
 	// Matrix
 	matrix_.World =
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -131,9 +148,19 @@ void Object3D::Initialize(Camera3D* camera) {
 	cBuffer_->spotLight->data->decay = spotLight_.decay;
 
 	// Matrix
-	cBuffer_->matrix->data->World = matrix_.World;
-	cBuffer_->matrix->data->WVP = matrix_.WVP;
-	cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+	if (isUseGltfModel_) {
+
+		cBuffer_->matrix->data->World = Matrix4x4::Multiply
+		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.World);
+		cBuffer_->matrix->data->WVP = Matrix4x4::Multiply
+		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.WVP);
+		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+	} else {
+
+		cBuffer_->matrix->data->World = matrix_.World;
+		cBuffer_->matrix->data->WVP = matrix_.WVP;
+		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+	}
 
 	// Camera
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
@@ -148,14 +175,11 @@ void Object3D::UpdateImGui(const std::string& objectName) {
 
 	ImGui::Begin(objectName.c_str());
 
-	ImGui::ColorEdit3("specularColor", &specularColor_.x);
-	ImGui::DragFloat("shininess", &shininess_, 0.01f);
 	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
 	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
 	ImGui::DragFloat3("translate", &transform_.translate.x, 0.05f, -20.0f, 20.0f);
-	ImGui::Checkbox("enableBlinnPhongReflection", &enableBlinnPhongReflection_);
 
 	ImGui::End();
 }
@@ -217,9 +241,19 @@ void Object3D::Update(Camera3D* camera) {
 	cBuffer_->spotLight->data->decay = spotLight_.decay;
 
 	// Matrix
-	cBuffer_->matrix->data->World = matrix_.World;
-	cBuffer_->matrix->data->WVP = matrix_.WVP;
-	cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+	if (isUseGltfModel_) {
+
+		cBuffer_->matrix->data->World = Matrix4x4::Multiply
+		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.World);
+		cBuffer_->matrix->data->WVP = Matrix4x4::Multiply
+		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.WVP);
+		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+	} else {
+
+		cBuffer_->matrix->data->World = matrix_.World;
+		cBuffer_->matrix->data->WVP = matrix_.WVP;
+		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+	}
 
 	// Camera
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();

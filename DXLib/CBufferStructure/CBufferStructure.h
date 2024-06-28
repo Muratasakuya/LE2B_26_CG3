@@ -116,11 +116,20 @@ struct ModelMaterialData {
 	std::string textureFilePath;
 };
 
+// Node構造体
+struct Node {
+
+	Matrix4x4 localMatrix;
+	std::string name;
+	std::vector<Node> children;
+};
+
 // モデルデータ構造体
 struct ModelData {
 
 	std::vector<VertexData> vertices;
 	ModelMaterialData material;
+	Node rootNode;
 };
 
 // CBマテリアルデータ

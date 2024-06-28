@@ -58,41 +58,23 @@ private:
 	/*----------------------------------------------------------------------*/
 	// 3Dオブジェクト
 
-	// ポイントライト
-	PointLight pointLight_;
-	// スポットライト
-	SpotLight spotLight_;
+
 
 	/*----------------------------------------------------------------------*/
-	// 球
+	// plane
 
 	// インスタンス
-	std::unique_ptr<Object3D> sphere_;
+	std::unique_ptr<Object3D> plane_;
 
 	// 描画タイプ
-	PipelineType sphereDrawType_;
+	PipelineType planeDrawType_;
 
 	// ブレンドモード
-	BlendMode sphereBlendMode_;
-
-	// テクスチャの名前
-	std::string sphereTextureName_;
-
-	/*----------------------------------------------------------------------*/
-	// terrain
-
-	// インスタンス
-	std::unique_ptr<Object3D> terrain_;
-
-	// 描画タイプ
-	PipelineType terrainDrawType_;
-
-	// ブレンドモード
-	BlendMode terrainBlendMode_;
+	BlendMode planeBlendMode_;
 
 	// モデルの名前
-	std::string terrainModelName_;
+	std::string planeModelName_;
 	// テクスチャの名前
-	std::string terrainTextureName_;
+	std::string planeTextureName_;
 
 };

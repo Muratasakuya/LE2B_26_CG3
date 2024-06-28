@@ -28,6 +28,10 @@ public:
 
 	void Draw(PipelineType pipelineType, BlendMode blendMode, const std::string& textureName, const std::optional<std::string>& modelName = std::nullopt);
 
+	// setter
+
+	void SetIsUseGLTFModel(bool useGltfModel,const std::string& modelName);
+
 private:
 	/*-----------------------------*/
 	///			メンバ変数
@@ -37,5 +41,8 @@ private:
 
 	Vector3 specularColor_{};
 	float shininess_{};
+
+	std::string gltfModelName_;
+	bool isUseGltfModel_;
 
 };
