@@ -10,6 +10,7 @@
 #include <string>
 #include <optional>
 #include <numbers>
+#include <filesystem>
 
 // オブジェクトタイプ
 enum class Object3DType {

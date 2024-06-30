@@ -61,20 +61,10 @@ private:
 
 
 	/*----------------------------------------------------------------------*/
-	// plane
+	// 3Dモデル
 
 	// インスタンス
-	std::unique_ptr<Object3D> plane_;
-
-	// 描画タイプ
-	PipelineType planeDrawType_;
-
-	// ブレンドモード
-	BlendMode planeBlendMode_;
-
-	// モデルの名前
-	std::string planeModelName_;
-	// テクスチャの名前
-	std::string planeTextureName_;
+	// teapot
+	std::unique_ptr<Object3D> teapot_;
 
 };

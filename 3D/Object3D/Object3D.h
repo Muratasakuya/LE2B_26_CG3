@@ -17,16 +17,18 @@ public:
 	///			メンバ関数
 	/*-----------------------------*/
 
-	Object3D(Object3DType objectType);
+	Object3D();
 	~Object3D();
 
-	void Initialize(Camera3D* camera);
+	void Initialize(
+		Camera3D* camera,const Object3DType& objectType,const PipelineType& drawType,const BlendMode& blendMode,
+		const std::string& textureName, const std::optional<std::string>& modelName = std::nullopt);
 
 	void UpdateImGui(const std::string& objectName);
 
 	void Update(Camera3D* camera);
 
-	void Draw(PipelineType pipelineType, BlendMode blendMode, const std::string& textureName, const std::optional<std::string>& modelName = std::nullopt);
+	void Draw();
 
 	// setter
 
@@ -38,11 +40,15 @@ private:
 	/*-----------------------------*/
 
 	Object3DType objectType_{};
+	PipelineType drawType_{};
+	BlendMode blendMode_{};
 
 	Vector3 specularColor_{};
 	float shininess_{};
 
+	std::string textureName_;
+	std::string modelName_;
 	std::string gltfModelName_;
-	bool isUseGltfModel_;
+	bool isUseGltfModel_{};
 
 };

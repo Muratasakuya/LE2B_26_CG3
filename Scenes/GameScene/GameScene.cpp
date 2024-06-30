@@ -39,34 +39,15 @@ GameScene::GameScene() {
 
 
 	/*--------------------------------------------*/
-	/*  plane 平面  */
+	/* teapot */
 
 	// 生成
-	plane_ = std::make_unique<Object3D>(Object3DType::Model);
+	teapot_ = std::make_unique<Object3D>();
 
 	// 初期化
-	plane_->Initialize(camera3D_.get());
-	plane_->SetRotate({ 0.0f,std::numbers::pi_v < float>,0.0f });
-
-	// Lighting設定
-	plane_->SetEnableLighting(false);
-
-	// 描画タイプ
-	planeDrawType_ = Texture;
-
-	// ブレンドモード
-	planeBlendMode_ = kBlendModeNormal;
-
-	// モデル読み込み
-	ModelManager::GetInstance()->LoadGLTFModel("./Resources/Gltf", "plane.gltf");
-	planeModelName_ = "plane";
-
-	// テクスチャ読み込み
-	TextureManager::GetInstance()->LoadTexture("./Resources/Images/uvChecker.png");
-	planeTextureName_ = "uvChecker";
-
-	// gltf使用
-	plane_->SetIsUseGLTFModel(true, planeModelName_);
+	teapot_->Initialize(
+		camera3D_.get(), Object3DType::Model, PhongReflection, kBlendModeNormal,
+		"checkerBoard.png", "teapot.obj");
 
 }
 
@@ -77,7 +58,7 @@ GameScene::~GameScene() {
 
 	camera2D_.reset();
 	camera3D_.reset();
-	plane_.reset();
+	teapot_.reset();
 }
 
 
@@ -104,8 +85,7 @@ void GameScene::Initialize() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// 平面
-	plane_->Initialize(camera3D_.get());
+
 
 }
 
@@ -115,6 +95,16 @@ void GameScene::Initialize() {
 *								    更新処理
 ////////////////////////////////////////////////////////////////////////////////*/
 void GameScene::Update() {
+
+	/*======================================================*/
+	// ImGui
+
+	ImGui::Begin("Setting");
+
+	camera3D_->ImGuiDraw();
+	teapot_->UpdateImGui("teapot");
+
+	ImGui::End();
 
 	/*======================================================*/
 	// 2Dカメラ
@@ -134,9 +124,10 @@ void GameScene::Update() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// 平面
-	plane_->UpdateImGui("plane");
-	plane_->Update(camera3D_.get());
+	/*--------------------------------------------*/
+	/* teapot */
+
+	teapot_->Update(camera3D_.get());
 
 }
 
@@ -144,9 +135,6 @@ void GameScene::Update() {
 *								    描画処理
 ////////////////////////////////////////////////////////////////////////////////*/
 void GameScene::Draw() {
-
-	// 3DCameraのImGui
-	camera3D_->ImGuiDraw();
 
 	/*======================================================*/
 	// 2Dオブジェクト
@@ -156,7 +144,9 @@ void GameScene::Draw() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	// 平面
-	plane_->Draw(planeDrawType_, planeBlendMode_, planeTextureName_, planeModelName_);
+	/*--------------------------------------------*/
+	/* teapot */
+
+	teapot_->Draw();
 
 }

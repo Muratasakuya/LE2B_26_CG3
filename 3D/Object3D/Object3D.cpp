@@ -6,6 +6,7 @@
 #include "Camera3D.h"
 #include "ImGuiManager.h"
 #include "ModelManager.h"
+#include "TextureManager.h"
 
 
 
@@ -24,9 +25,7 @@ void Object3D::SetIsUseGLTFModel(bool useGltfModel, const std::string& modelName
 /*////////////////////////////////////////////////////////////////////////////////
 *								コンストラクタ
 ////////////////////////////////////////////////////////////////////////////////*/
-Object3D::Object3D(Object3DType objectType) {
-
-	objectType_ = objectType;
+Object3D::Object3D() {
 
 	vertexResource_ = std::make_unique<VertexResource>();
 	cBuffer_ = std::make_unique<CBufferData>();
@@ -61,7 +60,11 @@ Object3D::~Object3D() {
 /*////////////////////////////////////////////////////////////////////////////////
 *									初期化
 ////////////////////////////////////////////////////////////////////////////////*/
-void Object3D::Initialize(Camera3D* camera) {
+void Object3D::Initialize(
+	Camera3D* camera, const Object3DType& objectType, const PipelineType& drawType, const BlendMode& blendMode,
+	const std::string& textureName, const std::optional<std::string>& modelName) {
+
+#pragma region /// cBufferDefaultInitialize ///
 
 	// 色
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
@@ -74,17 +77,17 @@ void Object3D::Initialize(Camera3D* camera) {
 	// ポイントライト
 	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
 	pointLight_.pos = { 0.0f,2.0f,0.0f };
-	pointLight_.intensity = 0.0f;
+	pointLight_.intensity = 1.0f;
 	pointLight_.radius = 5.0f;
 	pointLight_.decay = 1.0f;
 
 	// スポットライト
 	spotLight_.color = { 1.0f,1.0f,1.0f,1.0f };
 	spotLight_.pos = { 2.0f,1.25f,0.0f };
-	spotLight_.distance = 7.0f;
+	spotLight_.distance = 5.0f;
 	spotLight_.direction = Vector3::Normalize({ -1.0f,-1.0f,0.0 });
-	spotLight_.intensity = 4.0f;
-	spotLight_.decay = 2.0f;
+	spotLight_.intensity = 1.0f;
+	spotLight_.decay = 1.0f;
 	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 	spotLight_.cosFalloffStart = 1.0f;
 
@@ -164,6 +167,36 @@ void Object3D::Initialize(Camera3D* camera) {
 
 	// Camera
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
+
+#pragma endregion
+
+	// 3Dオブジェクトタイプのセット
+	objectType_ = objectType;
+
+	// 描画タイプのセット
+	drawType_ = drawType;
+
+	// ブレンドの設定
+	blendMode_ = blendMode;
+
+	// テクスチャの読み込み
+	TextureManager::GetInstance()->LoadTexture("./Resources/Images/" + textureName);
+	// ファイルパスからテクスチャ名を取得
+	std::filesystem::path texturePath(textureName);
+	// 拡張子を除いたテクスチャ名を取得
+	std::string identifierTexture = texturePath.stem().string();
+	textureName_ = identifierTexture;
+
+	if (modelName != "") {
+
+		// モデルの読み込み
+		ModelManager::GetInstance()->LoadModel("./Resources/Obj", *modelName);
+		// ファイルパスからモデル名を取得
+		std::filesystem::path modelPath(*modelName);
+		// 拡張子を除いたモデル名を取得
+		std::string identifierModel = modelPath.stem().string();
+		modelName_ = identifierModel;
+	}
 }
 
 
@@ -173,15 +206,17 @@ void Object3D::Initialize(Camera3D* camera) {
 ////////////////////////////////////////////////////////////////////////////////*/
 void Object3D::UpdateImGui(const std::string& objectName) {
 
-	ImGui::Begin(objectName.c_str());
+	ImGui::Text(objectName.c_str());
+	if (ImGui::TreeNode(objectName.c_str(),"Transform")) {
 
-	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
-	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
-	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
-	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
-	ImGui::DragFloat3("translate", &transform_.translate.x, 0.05f, -20.0f, 20.0f);
+		ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
+		ImGui::SliderAngle("rotateX", &transform_.rotate.x);
+		ImGui::SliderAngle("rotateY", &transform_.rotate.y);
+		ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
+		ImGui::DragFloat3("translate", &transform_.translate.x, 0.05f, -20.0f, 20.0f);
 
-	ImGui::End();
+		ImGui::TreePop();
+	}
 }
 
 
@@ -190,6 +225,8 @@ void Object3D::UpdateImGui(const std::string& objectName) {
 *								    更新処理
 ////////////////////////////////////////////////////////////////////////////////*/
 void Object3D::Update(Camera3D* camera) {
+
+#pragma region /// cBufferUpdate ///
 
 	if (enableBlinnPhongReflection_) {
 
@@ -257,6 +294,9 @@ void Object3D::Update(Camera3D* camera) {
 
 	// Camera
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
+
+#pragma endregion
+
 }
 
 
@@ -264,28 +304,28 @@ void Object3D::Update(Camera3D* camera) {
 /*////////////////////////////////////////////////////////////////////////////////
 *								    描画処理
 ////////////////////////////////////////////////////////////////////////////////*/
-void Object3D::Draw(PipelineType pipelineType, BlendMode blendMode, const std::string& textureName, const std::optional<std::string>& modelName) {
+void Object3D::Draw() {
 
 	switch (objectType_) {
 
 		// 三角形
 	case Object3DType::Triangle:
 
-		Engine::DrawTriangle(cBuffer_.get(), textureName, pipelineType, blendMode);
+		Engine::DrawTriangle(cBuffer_.get(), textureName_, drawType_, blendMode_);
 
 		break;
 
 		// 球
 	case Object3DType::Sphere:
 
-		Engine::DrawSphere(cBuffer_.get(), textureName, pipelineType, blendMode);
+		Engine::DrawSphere(cBuffer_.get(), textureName_, drawType_, blendMode_);
 
 		break;
 
 		// モデル
 	case Object3DType::Model:
 
-		Engine::DrawModel(cBuffer_.get(), *modelName, textureName, pipelineType, blendMode);
+		Engine::DrawModel(cBuffer_.get(), modelName_, textureName_, drawType_, blendMode_);
 
 		break;
 	}

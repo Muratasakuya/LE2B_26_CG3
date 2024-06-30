@@ -81,7 +81,7 @@ private:
 	static DXCommon* dxCommon_;
 	static ImGuiManager* imguiManager_;
 	static TextureManager* textureManger_;
-	static ModelManager* modelManger_;
+	static ModelManager* modelManager_;
 	static std::unique_ptr<Mesh> mesh_;
 	static std::unique_ptr<Sprite> sprite_;
 	static std::unique_ptr<PipelineManager> pipelineManager_;

@@ -13,7 +13,7 @@ WinApp* Engine::winApp_ = nullptr;
 DXCommon* Engine::dxCommon_ = nullptr;
 ImGuiManager* Engine::imguiManager_ = nullptr;
 TextureManager* Engine::textureManger_ = nullptr;
-ModelManager* Engine::modelManger_ = nullptr;
+ModelManager* Engine::modelManager_ = nullptr;
 std::unique_ptr<Mesh> Engine::mesh_ = nullptr;
 std::unique_ptr<Sprite> Engine::sprite_ = nullptr;
 std::unique_ptr<PipelineManager> Engine::pipelineManager_ = nullptr;
@@ -102,7 +102,7 @@ void Engine::Initialize(uint32_t width, uint32_t height) {
 	winApp_ = WinApp::GetInstance();
 	dxCommon_ = DXCommon::GetInstance();
 	textureManger_ = TextureManager::GetInstance();
-	modelManger_ = ModelManager::GetInstance();
+	modelManager_ = ModelManager::GetInstance();
 	mesh_ = std::make_unique<Mesh>();
 	sprite_ = std::make_unique<Sprite>();
 	pipelineManager_ = std::make_unique<PipelineManager>();
@@ -120,7 +120,7 @@ void Engine::Initialize(uint32_t width, uint32_t height) {
 	pipelineManager_->CreatePipelineStateObject(dxCommon_);
 
 	// モデルメッシュインスタンスの生成
-	modelManger_->Initialize();
+	modelManager_->Initialize();
 
 	// 各メッシュ生成
 	mesh_->CreateMeshes();
@@ -238,11 +238,11 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 
 	// 頂点バッファへデータ転送
-	modelManger_->VertexBufferMemcpy(modelName);
+	modelManager_->VertexBufferMemcpy(modelName);
 	// パイプラインのセット
 	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
-	modelManger_->IASetVertexBuffers(commandList.Get(), modelName);
+	modelManager_->IASetVertexBuffers(commandList.Get(), modelName);
 	// wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
 	// light用のCBufferの場所を設定
@@ -269,7 +269,7 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
 
 	// DrawCall
-	modelManger_->ModelDrawCall(commandList.Get(), modelName);
+	modelManager_->ModelDrawCall(commandList.Get(), modelName);
 }
 
 // パーティクル
@@ -281,11 +281,11 @@ void Engine::DrawParticle(
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 
 	// 頂点バッファへデータ転送
-	modelManger_->VertexBufferMemcpy(modelName);
+	modelManager_->VertexBufferMemcpy(modelName);
 	// パイプラインのセット
 	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
-	modelManger_->IASetVertexBuffers(commandList.Get(), modelName);
+	modelManager_->IASetVertexBuffers(commandList.Get(), modelName);
 	// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
