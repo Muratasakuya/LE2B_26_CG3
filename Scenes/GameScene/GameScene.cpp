@@ -39,15 +39,9 @@ GameScene::GameScene() {
 
 
 	/*--------------------------------------------*/
-	/* teapot */
+	/* Name */
 
-	// 生成
-	teapot_ = std::make_unique<Object3D>();
 
-	// 初期化
-	teapot_->Initialize(
-		camera3D_.get(), Object3DType::Model, PhongReflection, kBlendModeNormal,
-		"checkerBoard.png", "teapot.obj");
 
 }
 
@@ -58,7 +52,6 @@ GameScene::~GameScene() {
 
 	camera2D_.reset();
 	camera3D_.reset();
-	teapot_.reset();
 }
 
 
@@ -85,6 +78,9 @@ void GameScene::Initialize() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
+	/*--------------------------------------------*/
+	/* Name */
+
 
 
 }
@@ -99,12 +95,7 @@ void GameScene::Update() {
 	/*======================================================*/
 	// ImGui
 
-	ImGui::Begin("Setting");
-
-	camera3D_->ImGuiDraw();
-	teapot_->UpdateImGui("teapot");
-
-	ImGui::End();
+	
 
 	/*======================================================*/
 	// 2Dカメラ
@@ -125,9 +116,9 @@ void GameScene::Update() {
 	// 3Dオブジェクト
 
 	/*--------------------------------------------*/
-	/* teapot */
+	/* Name */
 
-	teapot_->Update(camera3D_.get());
+	
 
 }
 
@@ -145,8 +136,8 @@ void GameScene::Draw() {
 	// 3Dオブジェクト
 
 	/*--------------------------------------------*/
-	/* teapot */
+	/* Name */
 
-	teapot_->Draw();
+
 
 }
