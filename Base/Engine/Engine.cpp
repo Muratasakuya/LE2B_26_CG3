@@ -142,18 +142,30 @@ void Engine::DrawTriangle(const CBufferData* cBufferData, const std::string text
 	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &mesh_->GetTriangle()->vertexBufferView);
-	// マテリアルCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
-	if (pipelineType == Texture) {
+	// light用のCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
+	if (pipelineType == Texture || pipelineType == GS) {
+		// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
+		// pointLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->pointLight->resource->GetGPUVirtualAddress());
+		// spotLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->spotLight->resource->GetGPUVirtualAddress());
+	}
+	if (pipelineType == PhongReflection) {
+		// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->phongRefMaterial->resource->GetGPUVirtualAddress());
 		// light用のCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
+		commandList->SetGraphicsRootConstantBufferView(4, cBufferData->camera->resource->GetGPUVirtualAddress());
+		// pointLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(5, cBufferData->pointLight->resource->GetGPUVirtualAddress());
+		// spotLight用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(6, cBufferData->spotLight->resource->GetGPUVirtualAddress());
 	}
-	if (pipelineType == Texture) {
-		// SRVのセット
-		textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
-	}
+	// SRVのセット
+	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
 
 	// DrawCall
 	mesh_->TriangleDrawCall(commandList.Get());
@@ -268,8 +280,11 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
 
+	// CG3限定 確認用
+	commandList->DrawInstanced(3, 1, 0, 0);
+
 	// DrawCall
-	modelManager_->ModelDrawCall(commandList.Get(), modelName);
+	//modelManager_->ModelDrawCall(commandList.Get(), modelName);
 }
 
 // パーティクル

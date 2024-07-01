@@ -36,7 +36,16 @@ GameScene::GameScene() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
+	/*--------------------------------------------*/
+	/* 三角形 */
 
+	// 生成
+	triangle_ = std::make_unique<Object3D>();
+
+	// 初期化
+	triangle_->Initialize(
+		camera3D_.get(), Object3DType::Triangle, GS, kBlendModeNormal,
+		"uvChecker.png", "");
 
 	/*--------------------------------------------*/
 	/* plane */
@@ -62,6 +71,7 @@ GameScene::~GameScene() {
 	camera2D_.reset();
 	camera3D_.reset();
 	plane_.reset();
+	triangle_.reset();
 }
 
 
@@ -88,12 +98,7 @@ void GameScene::Initialize() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	/*--------------------------------------------*/
-	/* plane */
 
-	plane_->Initialize(
-		camera3D_.get(), Object3DType::Model, GS, kBlendModeNormal,
-		"cube.jpg", "plane.obj");
 
 }
 
@@ -128,6 +133,12 @@ void GameScene::Update() {
 	// 3Dオブジェクト
 
 	/*--------------------------------------------*/
+	/* 三角形 */
+
+	//triangle_->UpdateImGui("triangle");
+	triangle_->Update(camera3D_.get());
+
+	/*--------------------------------------------*/
 	/* plane */
 
 	plane_->UpdateImGui("plane");
@@ -147,6 +158,11 @@ void GameScene::Draw() {
 
 	/*======================================================*/
 	// 3Dオブジェクト
+
+	/*--------------------------------------------*/
+	/* 三角形 */
+
+	//triangle_->Draw();
 
 	/*--------------------------------------------*/
 	/* plane */
