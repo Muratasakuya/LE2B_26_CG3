@@ -276,7 +276,7 @@ void PipelineManager::CreatePipelineState(
 		graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 		// 利用するトポロジ(形状)のタイプ、三角形
 		graphicsPipelineStateDesc_.PrimitiveTopologyType =
-			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+			D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 		// どのように画面に色を打ち込むかの設定
 		graphicsPipelineStateDesc_.SampleDesc.Count = 1;
 		graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;

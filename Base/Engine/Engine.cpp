@@ -249,6 +249,9 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	// CommandListをdxCommonClassからもってくる
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 
+	// CG3 確認用
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
 	// 頂点バッファへデータ転送
 	modelManager_->VertexBufferMemcpy(modelName);
 	// パイプラインのセット
@@ -280,8 +283,7 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
 
-	// CG3限定 確認用
-	commandList->DrawInstanced(3, 1, 0, 0);
+	commandList->DrawInstanced(1, 1, 0, 0);
 
 	// DrawCall
 	//modelManager_->ModelDrawCall(commandList.Get(), modelName);
