@@ -17,10 +17,11 @@
 // パイプラインの種類
 enum PipelineType {
 
-	Primitive,      // 単色 テクスチャを使用しない
-	Texture,        // テクスチャ使用 Lightingの有無あり
-	pParticle,      // パーティクル用
-	PhongReflection // 鏡面反射
+	Primitive,       // 単色 テクスチャを使用しない
+	Texture,         // テクスチャ使用 Lightingの有無あり
+	pParticle,       // パーティクル用
+	PhongReflection, // 鏡面反射
+	GS               // ジオメトリシェーダ
 };
 
 // ブレンドモード
@@ -35,7 +36,7 @@ enum BlendMode {
 };
 
 // パイプラインタイプの数
-static const uint32_t pipelineTypeNum = 4;
+static const uint32_t pipelineTypeNum = 5;
 
 // ブレンドモードの数
 static const uint32_t blendModeNum = 6;

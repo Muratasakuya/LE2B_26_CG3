@@ -39,9 +39,18 @@ GameScene::GameScene() {
 
 
 	/*--------------------------------------------*/
-	/* Name */
+	/* plane */
 
+	// 生成
+	plane_ = std::make_unique<Object3D>();
 
+	// 初期化
+	plane_->Initialize(
+		camera3D_.get(), Object3DType::Model, GS, kBlendModeNormal,
+		"cube.jpg", "plane.obj");
+
+	// Y軸反転
+	plane_->SetRotate({ 0.0f,std::numbers::pi_v<float>,0.0f });
 
 }
 
@@ -52,6 +61,7 @@ GameScene::~GameScene() {
 
 	camera2D_.reset();
 	camera3D_.reset();
+	plane_.reset();
 }
 
 
@@ -79,9 +89,11 @@ void GameScene::Initialize() {
 	// 3Dオブジェクト
 
 	/*--------------------------------------------*/
-	/* Name */
+	/* plane */
 
-
+	plane_->Initialize(
+		camera3D_.get(), Object3DType::Model, GS, kBlendModeNormal,
+		"cube.jpg", "plane.obj");
 
 }
 
@@ -95,7 +107,7 @@ void GameScene::Update() {
 	/*======================================================*/
 	// ImGui
 
-	
+	camera3D_->ImGuiDraw();
 
 	/*======================================================*/
 	// 2Dカメラ
@@ -116,9 +128,10 @@ void GameScene::Update() {
 	// 3Dオブジェクト
 
 	/*--------------------------------------------*/
-	/* Name */
+	/* plane */
 
-	
+	plane_->UpdateImGui("plane");
+	plane_->Update(camera3D_.get());
 
 }
 
@@ -136,8 +149,8 @@ void GameScene::Draw() {
 	// 3Dオブジェクト
 
 	/*--------------------------------------------*/
-	/* Name */
+	/* plane */
 
-
+	plane_->Draw();
 
 }

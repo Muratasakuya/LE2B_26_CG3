@@ -2,6 +2,7 @@
 
 // DirectX
 #include "DXInclude.h"
+#include <d3dcompiler.h>
 
 #include "DXRootSignature.h"
 #include "DXInputLayout.h"
@@ -50,6 +51,7 @@ private:
 
 	std::array<ComPtr<IDxcBlob>, pipelineTypeNum> vsBlob_;
 	std::array<ComPtr<IDxcBlob>, pipelineTypeNum> psBlob_;
+	ComPtr<IDxcBlob> gsBlob_;
 
 	std::array<std::array<ComPtr<ID3D12PipelineState>, blendModeNum>, pipelineTypeNum> pipelineStates_;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc_{};
@@ -67,7 +69,7 @@ private:
 	);
 
 	void CreatePipelineState(
-		DXCommon* dxCommon, IDxcBlob* vs, IDxcBlob* ps, ID3D12RootSignature* rootSigature, D3D12_INPUT_LAYOUT_DESC inputLayout,
+		DXCommon* dxCommon, IDxcBlob* vs, IDxcBlob* ps, IDxcBlob* gs, ID3D12RootSignature* rootSigature, D3D12_INPUT_LAYOUT_DESC inputLayout,
 		D3D12_RENDER_TARGET_BLEND_DESC blendDesc, D3D12_RASTERIZER_DESC rasterizerDesc, D3D12_DEPTH_STENCIL_DESC depthStencilDesc,
 		PipelineType pipelineType, BlendMode blendMode);
 

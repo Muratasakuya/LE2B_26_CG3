@@ -247,7 +247,7 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
 	// light用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
-	if (pipelineType == Texture) {
+	if (pipelineType == Texture || pipelineType == GS) {
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定

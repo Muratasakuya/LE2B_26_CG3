@@ -30,6 +30,7 @@ public:
 	// getter
 
 	ID3D12RootSignature* GetRootSignature(PipelineType pipelineType) const;
+	ID3DBlob* GetErrorBlob(PipelineType pipelineType) const;
 
 private:
 	/*-----------------------------*/
@@ -38,5 +39,5 @@ private:
 
 	std::array<ComPtr<ID3D12RootSignature>, pipelineTypeNum> rootSignature_ = { nullptr,nullptr };
 	ComPtr<ID3DBlob> signatureBlob_ = nullptr;
-	ComPtr<ID3DBlob> errorBlob_ = nullptr;
+	std::array<ComPtr<ID3DBlob>, pipelineTypeNum> errorBlob_ = { nullptr };
 };

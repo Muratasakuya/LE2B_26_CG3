@@ -206,17 +206,16 @@ void Object3D::Initialize(
 ////////////////////////////////////////////////////////////////////////////////*/
 void Object3D::UpdateImGui(const std::string& objectName) {
 
-	ImGui::Text(objectName.c_str());
-	if (ImGui::TreeNode(objectName.c_str(),"Transform")) {
+	ImGui::Begin(objectName.c_str());
 
-		ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
-		ImGui::SliderAngle("rotateX", &transform_.rotate.x);
-		ImGui::SliderAngle("rotateY", &transform_.rotate.y);
-		ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
-		ImGui::DragFloat3("translate", &transform_.translate.x, 0.05f, -20.0f, 20.0f);
+	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
+	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
+	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
+	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
+	ImGui::DragFloat3("translate", &transform_.translate.x, 0.05f, -20.0f, 20.0f);
 
-		ImGui::TreePop();
-	}
+	ImGui::End();
+
 }
 
 

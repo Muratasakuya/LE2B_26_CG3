@@ -134,7 +134,7 @@ void PipelineManager::ShaderCompile(
 		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Primitive.PS.hlsl", L"ps_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
 		assert(psBlob_[pipelineType] != nullptr);
-	} else if (pipelineType == Texture ) {
+	} else if (pipelineType == Texture) {
 
 		/*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -185,6 +185,33 @@ void PipelineManager::ShaderCompile(
 		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/PhongReflection.PS.hlsl", L"ps_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
 		assert(psBlob_[pipelineType] != nullptr);
+	} else if (pipelineType == GS) {
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
+		//													  GS Shader
+
+		/*------------------------------------------------------------------------------------------------------------------------*/
+
+		// GS
+		gsBlob_= CompileShader(L"Resources/Shaders/BasicGS.hlsl", L"gs_6_0",
+			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
+		if (!gsBlob_) {
+
+			// コンパイルエラー 強制終了
+			OutputDebugStringA("Failed to compile GS shader\n");
+			exit(1);
+		}
+
+		// 頂点シェーダ
+		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Object3D.VS.hlsl", L"vs_6_0",
+			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
+		assert(vsBlob_[pipelineType] != nullptr);
+
+		// ピクセルシェーダ
+		psBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Basic.PS.GS.hlsl", L"ps_6_0",
+			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
+		assert(psBlob_[pipelineType] != nullptr);
 	}
 }
 
@@ -196,37 +223,70 @@ void PipelineManager::ShaderCompile(
 
 ////////////////////////////////////////////////////////////////////////////////*/
 void PipelineManager::CreatePipelineState(
-	DXCommon* dxCommon, IDxcBlob* vs, IDxcBlob* ps, ID3D12RootSignature* rootSigature, D3D12_INPUT_LAYOUT_DESC inputLayout,
+	DXCommon* dxCommon, IDxcBlob* vs, IDxcBlob* ps, IDxcBlob* gs, ID3D12RootSignature* rootSigature, D3D12_INPUT_LAYOUT_DESC inputLayout,
 	D3D12_RENDER_TARGET_BLEND_DESC blendDesc, D3D12_RASTERIZER_DESC rasterizerDesc, D3D12_DEPTH_STENCIL_DESC depthStencilDesc,
 	PipelineType pipelineType, BlendMode blendMode) {
 
-	HRESULT hr;
+	if (pipelineType != GS) {
 
-	// Pipeline State Objectの生成
-	graphicsPipelineStateDesc_.pRootSignature = rootSigature;
-	graphicsPipelineStateDesc_.InputLayout = inputLayout;
-	graphicsPipelineStateDesc_.VS = { vs->GetBufferPointer(),vs->GetBufferSize() };
-	graphicsPipelineStateDesc_.PS = { ps->GetBufferPointer(),ps->GetBufferSize() };
-	graphicsPipelineStateDesc_.BlendState.RenderTarget[0] = blendDesc;
-	graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc;
-	graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc;
-	graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		HRESULT hr;
 
-	// 書き込むRTVの情報
-	graphicsPipelineStateDesc_.NumRenderTargets = 1;
-	graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	// 利用するトポロジ(形状)のタイプ、三角形
-	graphicsPipelineStateDesc_.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	// どのように画面に色を打ち込むかの設定
-	graphicsPipelineStateDesc_.SampleDesc.Count = 1;
-	graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-	// 実際に生成
-	pipelineStates_[pipelineType][blendMode] = nullptr;
-	hr = dxCommon->GetDevice()->CreateGraphicsPipelineState(
-		&graphicsPipelineStateDesc_,
-		IID_PPV_ARGS(&pipelineStates_[pipelineType][blendMode]));
-	assert(SUCCEEDED(hr));
+		// Pipeline State Objectの生成
+		graphicsPipelineStateDesc_.pRootSignature = rootSigature;
+		graphicsPipelineStateDesc_.InputLayout = inputLayout;
+		graphicsPipelineStateDesc_.VS = { vs->GetBufferPointer(),vs->GetBufferSize() };
+		graphicsPipelineStateDesc_.PS = { ps->GetBufferPointer(),ps->GetBufferSize() };
+		graphicsPipelineStateDesc_.BlendState.RenderTarget[0] = blendDesc;
+		graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc;
+		graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc;
+		graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+		// 書き込むRTVの情報
+		graphicsPipelineStateDesc_.NumRenderTargets = 1;
+		graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		// 利用するトポロジ(形状)のタイプ、三角形
+		graphicsPipelineStateDesc_.PrimitiveTopologyType =
+			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		// どのように画面に色を打ち込むかの設定
+		graphicsPipelineStateDesc_.SampleDesc.Count = 1;
+		graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+		// 実際に生成
+		pipelineStates_[pipelineType][blendMode] = nullptr;
+		hr = dxCommon->GetDevice()->CreateGraphicsPipelineState(
+			&graphicsPipelineStateDesc_,
+			IID_PPV_ARGS(&pipelineStates_[pipelineType][blendMode]));
+		assert(SUCCEEDED(hr));
+	} else if (pipelineType == GS) {
+
+		HRESULT hr;
+
+		// Pipeline State Objectの生成
+		graphicsPipelineStateDesc_.pRootSignature = rootSigature;
+		graphicsPipelineStateDesc_.InputLayout = inputLayout;
+		graphicsPipelineStateDesc_.VS = { vs->GetBufferPointer(),vs->GetBufferSize() };
+		graphicsPipelineStateDesc_.GS = { gs->GetBufferPointer(),gs->GetBufferSize() };
+		graphicsPipelineStateDesc_.PS = { ps->GetBufferPointer(),ps->GetBufferSize() };
+		graphicsPipelineStateDesc_.BlendState.RenderTarget[0] = blendDesc;
+		graphicsPipelineStateDesc_.RasterizerState = rasterizerDesc;
+		graphicsPipelineStateDesc_.DepthStencilState = depthStencilDesc;
+		graphicsPipelineStateDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+		// 書き込むRTVの情報
+		graphicsPipelineStateDesc_.NumRenderTargets = 1;
+		graphicsPipelineStateDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		// 利用するトポロジ(形状)のタイプ、三角形
+		graphicsPipelineStateDesc_.PrimitiveTopologyType =
+			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		// どのように画面に色を打ち込むかの設定
+		graphicsPipelineStateDesc_.SampleDesc.Count = 1;
+		graphicsPipelineStateDesc_.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+		// 実際に生成
+		pipelineStates_[pipelineType][blendMode] = nullptr;
+		hr = dxCommon->GetDevice()->CreateGraphicsPipelineState(
+			&graphicsPipelineStateDesc_,
+			IID_PPV_ARGS(&pipelineStates_[pipelineType][blendMode]));
+		assert(SUCCEEDED(hr));
+	}
 }
 
 
@@ -244,12 +304,16 @@ void PipelineManager::CreatePipelineStateObject(DXCommon* dxCommon) {
 	depthStencil_ = std::make_unique<DXDepthStencil>();
 
 	// パイプラインの名前
-	pipelineTypes_ = { Primitive, Texture, pParticle, PhongReflection };
+	pipelineTypes_ = { Primitive, Texture, pParticle, PhongReflection, GS };
 
 	// ブレンドモードの名前
 	blendModeTypes = { kBlendModeNone ,kBlendModeNormal ,kBlendModeAdd ,kBlendModeSubtract ,kBlendModeMultiply ,kBlendModeScreen };
 
 	for (PipelineType pipelineType : pipelineTypes_) {
+
+		// ShaderCompile
+		ShaderCompile(dxCommon, pipelineType);
+
 		for (BlendMode blendType : blendModeTypes) {
 
 			// RootSignature
@@ -267,12 +331,9 @@ void PipelineManager::CreatePipelineStateObject(DXCommon* dxCommon) {
 			// depthStencil
 			depthStencil_->Create(true);
 
-			// ShaderCompile
-			ShaderCompile(dxCommon, pipelineType);
-
 			// PipelineState
 			CreatePipelineState(
-				dxCommon, vsBlob_[pipelineType].Get(), psBlob_[pipelineType].Get(), rootSignature_->GetRootSignature(pipelineType), inputLayout_->GetInputLayoutDesc(pipelineType),
+				dxCommon, vsBlob_[pipelineType].Get(), psBlob_[pipelineType].Get(),gsBlob_.Get(), rootSignature_->GetRootSignature(pipelineType), inputLayout_->GetInputLayoutDesc(pipelineType),
 				blendState, rasterizerState_->GetRasterizerDesc(), depthStencil_->GetDepthStencilDesc(),
 				pipelineType, blendType);
 		}
