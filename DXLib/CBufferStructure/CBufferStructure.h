@@ -132,6 +132,18 @@ struct ModelData {
 	Node rootNode;
 };
 
+// 頂点データ構造体
+struct VertexPos {
+
+	Vector3 pos;
+};
+
+// GSマトリックス構造体
+struct GSMatrix4x4 {
+
+	Matrix4x4 gsMatrix_;
+};
+
 // CBマテリアルデータ
 struct CBMaterialData {
 
@@ -162,6 +174,16 @@ struct CBTransformData {
 	TransformationMatrix* data = nullptr;
 };
 
+// CBGSマトリックスデータ
+struct CBGSMatrixData {
+
+	// Matrix wvp
+	ComPtr<ID3D12Resource> resource;
+
+	// 行列
+	GSMatrix4x4* data = nullptr;
+};
+
 //CBパーティクル用トランスフォームデータ
 struct CBParticleTransformData {
 
@@ -188,6 +210,7 @@ struct CBufferData {
 	std::unique_ptr<CBPhongRefMaterialData> phongRefMaterial;
 	std::unique_ptr<CBTransformData> matrix;
 	std::unique_ptr<CBParticleTransformData> particleMatrix;
+	std::unique_ptr<CBGSMatrixData> gsMatrix_;
 	std::unique_ptr<CBLightData> light;
 	std::unique_ptr<CBPointLightData> pointLight;
 	std::unique_ptr<CBSpotLightData> spotLight;

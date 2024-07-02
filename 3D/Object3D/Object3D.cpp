@@ -34,6 +34,7 @@ Object3D::Object3D() {
 	cBuffer_->material = vertexResource_->CreateMaterial();
 	cBuffer_->phongRefMaterial = vertexResource_->CreatePhongRefMaterial();
 	cBuffer_->matrix = vertexResource_->CreateWVP();
+	cBuffer_->gsMatrix_ = vertexResource_->CreateGSMatrix();
 	cBuffer_->light = vertexResource_->CreateLight();
 	cBuffer_->pointLight = vertexResource_->CreatePointLight();
 	cBuffer_->spotLight = vertexResource_->CreateSpotLight();
@@ -63,6 +64,15 @@ Object3D::~Object3D() {
 void Object3D::Initialize(
 	Camera3D* camera, const Object3DType& objectType, const PipelineType& drawType, const BlendMode& blendMode,
 	const std::string& textureName, const std::optional<std::string>& modelName) {
+
+	// 3Dオブジェクトタイプのセット
+	objectType_ = objectType;
+
+	// 描画タイプのセット
+	drawType_ = drawType;
+
+	// ブレンドの設定
+	blendMode_ = blendMode;
 
 #pragma region /// cBufferDefaultInitialize ///
 
@@ -112,6 +122,9 @@ void Object3D::Initialize(
 		Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 	matrix_.WorldInverseTranspose =
 		Matrix4x4::Transpose(Matrix4x4::Inverse(matrix_.World));
+
+	// GS
+	gsMat.gsMatrix_ = Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
 	// Material
 	cBuffer_->material->data->color = color_;
@@ -163,21 +176,17 @@ void Object3D::Initialize(
 		cBuffer_->matrix->data->World = matrix_.World;
 		cBuffer_->matrix->data->WVP = matrix_.WVP;
 		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+
+		if (drawType_ == GS) {
+
+			cBuffer_->gsMatrix_->data->gsMatrix_ = gsMat.gsMatrix_;
+		}
 	}
 
 	// Camera
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
 
 #pragma endregion
-
-	// 3Dオブジェクトタイプのセット
-	objectType_ = objectType;
-
-	// 描画タイプのセット
-	drawType_ = drawType;
-
-	// ブレンドの設定
-	blendMode_ = blendMode;
 
 	// テクスチャの読み込み
 	TextureManager::GetInstance()->LoadTexture("./Resources/Images/" + textureName);
@@ -208,7 +217,7 @@ void Object3D::UpdateImGui(const std::string& objectName) {
 
 	ImGui::Begin(objectName.c_str());
 
-	ImGui::SliderFloat3("scale", &transform_.scale.x, 0.0f, 3.0f);
+	ImGui::SliderFloat2("scale", &transform_.scale.x, 0.0f, 3.0f);
 	ImGui::SliderAngle("rotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("rotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("rotateZ", &transform_.rotate.z);
@@ -289,6 +298,13 @@ void Object3D::Update(Camera3D* camera) {
 		cBuffer_->matrix->data->World = matrix_.World;
 		cBuffer_->matrix->data->WVP = matrix_.WVP;
 		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
+
+		if (drawType_ == GS) {
+
+			// GS
+			gsMat.gsMatrix_ = Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+			cBuffer_->gsMatrix_->data->gsMatrix_ = gsMat.gsMatrix_;
+		}
 	}
 
 	// Camera
@@ -325,6 +341,13 @@ void Object3D::Draw() {
 	case Object3DType::Model:
 
 		Engine::DrawModel(cBuffer_.get(), modelName_, textureName_, drawType_, blendMode_);
+
+		break;
+
+		// GS
+	case Object3DType::GS:
+
+		Engine::DrawGSModel(cBuffer_.get(), textureName_, drawType_, blendMode_);
 
 		break;
 	}

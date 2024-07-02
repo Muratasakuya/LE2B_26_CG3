@@ -249,20 +249,18 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	// CommandListをdxCommonClassからもってくる
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
 
-	// CG3 確認用
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-
 	// 頂点バッファへデータ転送
 	modelManager_->VertexBufferMemcpy(modelName);
 	// パイプラインのセット
 	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
 	// 頂点バッファの設定
 	modelManager_->IASetVertexBuffers(commandList.Get(), modelName);
+
 	// wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
 	// light用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
-	if (pipelineType == Texture || pipelineType == GS) {
+	if (pipelineType == Texture) {
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定
@@ -283,10 +281,8 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	// SRVのセット
 	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 2, textureName);
 
-	commandList->DrawInstanced(1, 1, 0, 0);
-
 	// DrawCall
-	//modelManager_->ModelDrawCall(commandList.Get(), modelName);
+	modelManager_->ModelDrawCall(commandList.Get(), modelName);
 }
 
 // パーティクル
@@ -314,4 +310,26 @@ void Engine::DrawParticle(
 
 	// DrawCall
 	commandList->DrawInstanced(vertexNum, instanceCount, 0, 0);
+}
+
+// GS
+void Engine::DrawGSModel(const CBufferData* cBufferData,
+	const std::string textureName, PipelineType pipelineType, BlendMode blendMode) {
+
+	// CommandListをdxCommonClassからもってくる
+	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon_->GetCommandList();
+
+	// 点から描画
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	// パイプラインのセット
+	pipelineManager_->SetGraphicsPipeline(commandList.Get(), pipelineType, blendMode);
+	// 頂点バッファの設定
+	commandList->IASetVertexBuffers(0, 1, &mesh_->GetGSPoint()->vertexBufferView);
+	// gsMatrix用のCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->gsMatrix_->resource->GetGPUVirtualAddress());
+	// SRVのセット
+	textureManger_->SetGraphicsRootDescriptorTable(commandList.Get(), 1, textureName);
+
+	commandList->DrawInstanced(1, 1, 0, 0);
 }

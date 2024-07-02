@@ -17,7 +17,8 @@ enum class Object3DType {
 
 	Triangle,
 	Sphere,
-	Model
+	Model,
+	GS
 };
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +64,7 @@ protected:
 
 	// matrix
 	TransformationMatrix matrix_{};
+	GSMatrix4x4 gsMat{};
 
 	// アフィン
 	Transform transform_{};

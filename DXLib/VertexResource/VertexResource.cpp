@@ -156,6 +156,32 @@ std::unique_ptr<CBParticleTransformData> VertexResource::CreateParticleWVP(const
 
 /*////////////////////////////////////////////////////////////////////////////////
 
+*								 GSMatrixデータの生成
+
+////////////////////////////////////////////////////////////////////////////////*/
+std::unique_ptr<CBGSMatrixData> VertexResource::CreateGSMatrix() {
+
+	DXCommon* dxCommon = DXCommon::GetInstance();
+
+	HRESULT hr;
+	std::unique_ptr<CBGSMatrixData> matrix = std::make_unique<CBGSMatrixData>();
+
+	// WVPの生成
+	matrix->resource = CreateBufferResource(dxCommon->GetDevice(), sizeof(GSMatrix4x4));
+
+	// WVPデータのマッピング
+	hr = matrix->resource->Map(0, nullptr, reinterpret_cast<void**>(&matrix->data));
+
+	// 作れなければエラー
+	assert(SUCCEEDED(hr));
+
+	return matrix;
+}
+
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+
 *								Lightデータの生成
 
 ////////////////////////////////////////////////////////////////////////////////*/

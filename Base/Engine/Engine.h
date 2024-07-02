@@ -69,8 +69,11 @@ public:
 
 	// パーティクル
 	static void DrawParticle(
-		const CBufferData* cBufferData, const UINT vertexNum,const UINT instanceCount, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle,
+		const CBufferData* cBufferData, const UINT vertexNum, const UINT instanceCount, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle,
 		const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+
+	// GS
+	static void DrawGSModel(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 private:
 	/*-----------------------------*/

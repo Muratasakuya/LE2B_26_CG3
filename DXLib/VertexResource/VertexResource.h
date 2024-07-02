@@ -30,6 +30,9 @@ public:
 	// パーティクル用WVP生成
 	std::unique_ptr<CBParticleTransformData> CreateParticleWVP(const uint32_t instanceNum);
 
+	// GSMatrix生成
+	std::unique_ptr<CBGSMatrixData> CreateGSMatrix();
+
 	// Light生成
 	std::unique_ptr<CBLightData> CreateLight();
 

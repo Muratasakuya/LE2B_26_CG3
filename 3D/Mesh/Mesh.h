@@ -22,6 +22,18 @@ public:
 	///			メンバ関数
 	/*-----------------------------*/
 
+	// GS
+	struct GSPointData {
+
+		// 頂点バッファ
+		ComPtr<ID3D12Resource> vertexResource;
+		// 頂点バッファビュー
+		D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+
+		// 頂点バッファデータ
+		VertexPos* data = nullptr;
+	};
+
 	// 三角形メッシュデータ
 	struct TriangleMeshData {
 
@@ -55,11 +67,11 @@ public:
 
 	void CreateMeshes();
 
-	void SetSphereData(VertexData* vertexData, uint32_t* indexData);
-
 	void ResetMeshCount();
 
 	void VertexBufferMemcpy();
+	void SetSphereData(VertexData* vertexData, uint32_t* indexData);
+
 	void TriangleDrawCall(ID3D12GraphicsCommandList* commandList);
 	void SphereDrawCall(ID3D12GraphicsCommandList* commandList);
 
@@ -67,6 +79,7 @@ public:
 
 	TriangleMeshData* GetTriangle() const;
 	SphereMeshData* GetSphere() const;
+	GSPointData* GetGSPoint() const;
 
 private:
 	/*-----------------------------*/
@@ -113,5 +126,13 @@ private:
 	std::unique_ptr<SphereMeshData> CreateSphereMesh(UINT vertexCount, UINT indexCount);
 
 	/*--------------------------------------------------------------------*/
+	/// GS
+
+	// 頂点座標
+	Vector3 gsVertexPos{};
+	// GS頂点データ
+	std::unique_ptr<GSPointData> gsPoint_;
+	// GS頂点生成
+	std::unique_ptr<GSPointData> CreateGSPoint();
 
 };

@@ -1,6 +1,7 @@
 #include "Mesh.h"
 
 #include "DXCommon.h"
+#include "ImGuiManager.h"
 
 
 
@@ -15,6 +16,13 @@ Mesh::SphereMeshData* Mesh::GetSphere() const {
 
 	return sphere_.get();
 }
+
+// gsPoint_ getter
+Mesh::GSPointData* Mesh::GetGSPoint() const {
+
+	return gsPoint_.get();
+}
+
 
 
 // メッシュカウントのリセット
@@ -43,6 +51,9 @@ void Mesh::CreateMeshes() {
 
 	// 球
 	sphere_ = CreateSphereMesh(sphereVertexCount, sphereIndexCount);
+
+	// GS頂点
+	gsPoint_ = CreateGSPoint();
 
 }
 
@@ -132,6 +143,38 @@ std::unique_ptr<Mesh::SphereMeshData> Mesh::CreateSphereMesh(UINT vertexCount, U
 	}
 
 	return mesh;
+}
+
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+
+*									GS頂点の生成
+
+////////////////////////////////////////////////////////////////////////////////*/
+std::unique_ptr<Mesh::GSPointData> Mesh::CreateGSPoint() {
+
+	DXCommon* dxCommon = DXCommon::GetInstance();
+
+	HRESULT hr;
+	std::unique_ptr<GSPointData> point = std::make_unique<GSPointData>();
+
+	// 頂点データサイズ
+	UINT sizeVB = static_cast<UINT>(sizeof(Vector3));
+
+	// 頂点バッファの生成
+	point->vertexResource = vertexResource_.CreateBufferResource(dxCommon->GetDevice(), sizeVB);
+
+	// 頂点バッファビューの作成
+	point->vertexBufferView.BufferLocation = point->vertexResource->GetGPUVirtualAddress();
+	point->vertexBufferView.SizeInBytes = sizeVB;
+	point->vertexBufferView.StrideInBytes = sizeof(Vector3);
+
+	// 頂点データのマッピング
+	hr = point->vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&point->data));
+	assert(SUCCEEDED(hr));
+
+	return point;
 }
 
 

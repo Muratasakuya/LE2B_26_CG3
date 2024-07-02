@@ -204,7 +204,7 @@ void PipelineManager::ShaderCompile(
 		}
 
 		// 頂点シェーダ
-		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Object3D.VS.hlsl", L"vs_6_0",
+		vsBlob_[pipelineType] = CompileShader(L"./Resources/Shaders/Basic.VS.GS.hlsl", L"vs_6_0",
 			dxCommon->GetDxcUtils(), dxCommon->GetDxcCompiler(), dxCommon->GetIncludeHandler());
 		assert(vsBlob_[pipelineType] != nullptr);
 
