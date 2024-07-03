@@ -60,7 +60,7 @@ void DXRootSignature::Create(DXCommon* dxCommon, PipelineType pipelineType) {
 		hr = dxCommon->GetDevice()->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
 			signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_[pipelineType]));
 		assert(SUCCEEDED(hr));
-	} else if (pipelineType == Texture) {
+	} else if (pipelineType == Normal) {
 
 		D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 

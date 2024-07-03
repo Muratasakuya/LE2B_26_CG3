@@ -146,7 +146,7 @@ void Engine::DrawTriangle(const CBufferData* cBufferData, const std::string text
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
 	// light用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
-	if (pipelineType == Texture || pipelineType == GS) {
+	if (pipelineType == Normal || pipelineType == GS) {
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定
@@ -189,7 +189,7 @@ void Engine::DrawSprite(const CBufferData* cBufferData, const std::string textur
 	commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
-	if (pipelineType == Texture) {
+	if (pipelineType == Normal) {
 		// light用のCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
 	}
@@ -218,7 +218,7 @@ void Engine::DrawSphere(const CBufferData* cBufferData, const std::string textur
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
 	// light用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
-	if (pipelineType == Texture) {
+	if (pipelineType == Normal) {
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定
@@ -260,7 +260,7 @@ void Engine::DrawModel(const CBufferData* cBufferData, const std::string modelNa
 	commandList->SetGraphicsRootConstantBufferView(1, cBufferData->matrix->resource->GetGPUVirtualAddress());
 	// light用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(3, cBufferData->light->resource->GetGPUVirtualAddress());
-	if (pipelineType == Texture) {
+	if (pipelineType == Normal) {
 		// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, cBufferData->material->resource->GetGPUVirtualAddress());
 		// pointLight用のCBufferの場所を設定

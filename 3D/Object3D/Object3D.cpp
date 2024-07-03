@@ -27,18 +27,25 @@ void Object3D::SetIsUseGLTFModel(bool useGltfModel, const std::string& modelName
 ////////////////////////////////////////////////////////////////////////////////*/
 Object3D::Object3D() {
 
-	vertexResource_ = std::make_unique<VertexResource>();
 	cBuffer_ = std::make_unique<CBufferData>();
 
 	// CBufferの作成
-	cBuffer_->material = vertexResource_->CreateMaterial();
-	cBuffer_->phongRefMaterial = vertexResource_->CreatePhongRefMaterial();
-	cBuffer_->matrix = vertexResource_->CreateWVP();
-	cBuffer_->gsMatrix_ = vertexResource_->CreateGSMatrix();
-	cBuffer_->light = vertexResource_->CreateLight();
-	cBuffer_->pointLight = vertexResource_->CreatePointLight();
-	cBuffer_->spotLight = vertexResource_->CreateSpotLight();
-	cBuffer_->camera = vertexResource_->CreateCamera();
+
+	// Material
+	cBuffer_->material = vertexResource_.CreateMaterial();
+	cBuffer_->phongRefMaterial = vertexResource_.CreatePhongRefMaterial();
+
+	// Matrix
+	cBuffer_->matrix = vertexResource_.CreateWVP();
+	cBuffer_->gsMatrix_ = vertexResource_.CreateGSMatrix();
+
+	// Light
+	cBuffer_->light = vertexResource_.CreateLight();
+	cBuffer_->pointLight = vertexResource_.CreatePointLight();
+	cBuffer_->spotLight = vertexResource_.CreateSpotLight();
+
+	// Camera
+	cBuffer_->camera = vertexResource_.CreateCamera();
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +53,7 @@ Object3D::Object3D() {
 ////////////////////////////////////////////////////////////////////////////////*/
 Object3D::~Object3D() {
 
+	// 解放処理
 	cBuffer_->material.reset();
 	cBuffer_->phongRefMaterial.reset();
 	cBuffer_->matrix.reset();
@@ -76,75 +84,97 @@ void Object3D::Initialize(
 
 #pragma region /// cBufferDefaultInitialize ///
 
-	// 色
-	color_ = { 1.0f,1.0f,1.0f,1.0f };
-	specularColor_ = { 1.0f,1.0f,1.0f };
-	shininess_ = 64.0f;
+	/*--------------------------------------------------------------------------*/
+	/// LightDefaultInitialize ↓
 
-	// ライトの向き
-	lightDirection_ = { 0.0f,-1.0f,0.0f };
+	// 平行光源
+	directionlLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	// デフォルトは上から
+	directionlLight_.direction = { 0.0f,-1.0f,0.0f };
+	directionlLight_.intensity = 1.0f;
 
 	// ポイントライト
 	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
-	pointLight_.pos = { 0.0f,2.0f,0.0f };
+	// デフォルトは上から
+	pointLight_.pos = { 0.0f,1.0f,0.0f };
 	pointLight_.intensity = 1.0f;
 	pointLight_.radius = 5.0f;
 	pointLight_.decay = 1.0f;
 
 	// スポットライト
 	spotLight_.color = { 1.0f,1.0f,1.0f,1.0f };
-	spotLight_.pos = { 2.0f,1.25f,0.0f };
+	spotLight_.pos = { 0.0f,0.0f,0.0f };
 	spotLight_.distance = 5.0f;
+	// デフォルトは右から
 	spotLight_.direction = Vector3::Normalize({ -1.0f,-1.0f,0.0 });
 	spotLight_.intensity = 1.0f;
 	spotLight_.decay = 1.0f;
 	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
 	spotLight_.cosFalloffStart = 1.0f;
 
-	// アフィン
+	/*--------------------------------------------------------------------------*/
+	/// MaterialDefaultInitialize ↓
+
+	// オブジェクトの色
+	material_.color = { 1.0f,1.0f,1.0f,1.0f };
+	// デフォルトはLightingなし
+	material_.enableLighting = false;
+	material_.enableHalfLambert = false;
+	material_.uvTransform = Matrix4x4::MakeIdentity4x4();
+
+	// PhongReflectionの色
+	phongRef_.color = { 1.0f,1.0f,1.0f,1.0f };
+	// デフォルトはLightingなし
+	phongRef_.enableLighting = false;
+	phongRef_.enablePhongReflection = false;
+	phongRef_.enableBlinnPhongReflection = false;
+	phongRef_.uvTransform = Matrix4x4::MakeIdentity4x4();
+	phongRef_.specularColor = { 1.0f,1.0f,1.0f };
+	phongRef_.shininess = 32.0f;
+
+	/*--------------------------------------------------------------------------*/
+
+	// SRT
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.0f,0.0f,0.0f };
 	transform_.translate = { 0.0f,0.0f,0.0f };
 
-	enableLighting_ = false;
-	enableHalfLambert_ = false;
-	enablePhongReflection_ = false;
-	enableBlinnPhongReflection_ = false;
-
-	// デフォルトはfalse
-	isUseGltfModel_ = false;
-	gltfModelName_ = "";
-
-	// Matrix
+	// Matrixの計算
 	matrix_.World =
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	matrix_.WVP =
 		Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 	matrix_.WorldInverseTranspose =
 		Matrix4x4::Transpose(Matrix4x4::Inverse(matrix_.World));
-
-	// GS
+	// GSMatrixの計算
 	gsMat.gsMatrix_ = Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
-	// Material
-	cBuffer_->material->data->color = color_;
-	cBuffer_->material->data->enableLighting = enableLighting_;
-	cBuffer_->material->data->enableHalfLambert = enableHalfLambert_;
-	cBuffer_->material->data->uvTransform = Matrix4x4::MakeIdentity4x4();
+	// デフォルトはfalse
+	isUseGltfModel_ = false;
+	gltfModelName_ = "";
 
-	// PhongRefMaterial
-	cBuffer_->phongRefMaterial->data->color = color_;
-	cBuffer_->phongRefMaterial->data->enableLighting = enableLighting_;
-	cBuffer_->phongRefMaterial->data->enablePhongReflection = enablePhongReflection_;
-	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = enableBlinnPhongReflection_;
-	cBuffer_->phongRefMaterial->data->uvTransform = Matrix4x4::MakeIdentity4x4();;
-	cBuffer_->phongRefMaterial->data->specularColor = specularColor_;
-	cBuffer_->phongRefMaterial->data->shininess = shininess_;
+	/*--------------------------------------------------------------------------*/
+	/// CBufferDefaultInitialize ↓
+
+	// Material
+	cBuffer_->material->data->color = material_.color;
+	cBuffer_->material->data->enableLighting = material_.enableLighting;
+	cBuffer_->material->data->enableHalfLambert = material_.enableHalfLambert;
+	cBuffer_->material->data->uvTransform = material_.uvTransform;
+
+	// PhongReflectionMaterial
+	cBuffer_->phongRefMaterial->data->color = phongRef_.color;
+	cBuffer_->phongRefMaterial->data->enableLighting = phongRef_.enableLighting;
+	cBuffer_->phongRefMaterial->data->enablePhongReflection = phongRef_.enablePhongReflection;
+	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = phongRef_.enableBlinnPhongReflection;
+	cBuffer_->phongRefMaterial->data->uvTransform = phongRef_.uvTransform;
+	cBuffer_->phongRefMaterial->data->specularColor = phongRef_.specularColor;
+	cBuffer_->phongRefMaterial->data->shininess = phongRef_.shininess;
 
 	// DirectionalLight
-	cBuffer_->light->data->color = { 1.0f,1.0f,1.0f,1.0f };
-	cBuffer_->light->data->direction = lightDirection_;
-	cBuffer_->light->data->intensity = 0.0f;
+	cBuffer_->light->data->color = directionlLight_.color;
+	cBuffer_->light->data->direction = directionlLight_.direction;
+	cBuffer_->light->data->intensity = directionlLight_.intensity;
 
 	// PointLight
 	cBuffer_->pointLight->data->color = pointLight_.color;
@@ -166,6 +196,7 @@ void Object3D::Initialize(
 	// Matrix
 	if (isUseGltfModel_) {
 
+		// GLTFModelのMatrix計算
 		cBuffer_->matrix->data->World = Matrix4x4::Multiply
 		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.World);
 		cBuffer_->matrix->data->WVP = Matrix4x4::Multiply
@@ -173,17 +204,19 @@ void Object3D::Initialize(
 		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
 	} else {
 
+		// GLTFModel以外のMatrix計算 基本こっち側
 		cBuffer_->matrix->data->World = matrix_.World;
 		cBuffer_->matrix->data->WVP = matrix_.WVP;
 		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
 
 		if (drawType_ == GS) {
 
+			// GSを通したときのMatrix計算￥
 			cBuffer_->gsMatrix_->data->gsMatrix_ = gsMat.gsMatrix_;
 		}
 	}
 
-	// Camera
+	// Cameraのワールド座標のセット
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
 
 #pragma endregion
@@ -244,29 +277,35 @@ void Object3D::Update(Camera3D* camera) {
 		enablePhongReflection_ = true;
 	}
 
-	// Matrix
+	// Matrixの計算
 	matrix_.World =
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	matrix_.WVP =
 		Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 	matrix_.WorldInverseTranspose =
 		Matrix4x4::Transpose(Matrix4x4::Inverse(matrix_.World));
+	// GSMatrixの計算
+	gsMat.gsMatrix_ = Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
 	// Material
-	cBuffer_->material->data->color = color_;
-	cBuffer_->material->data->enableLighting = enableLighting_;
-	cBuffer_->material->data->enableHalfLambert = enableHalfLambert_;
+	cBuffer_->material->data->color = material_.color;
+	cBuffer_->material->data->enableLighting = material_.enableLighting;
+	cBuffer_->material->data->enableHalfLambert = material_.enableHalfLambert;
+	cBuffer_->material->data->uvTransform = material_.uvTransform;
 
-	// PhongRefMaterial
-	cBuffer_->phongRefMaterial->data->color = color_;
-	cBuffer_->phongRefMaterial->data->enableLighting = enableLighting_;
-	cBuffer_->phongRefMaterial->data->enablePhongReflection = enablePhongReflection_;
-	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = enableBlinnPhongReflection_;
-	cBuffer_->phongRefMaterial->data->specularColor = specularColor_;
-	cBuffer_->phongRefMaterial->data->shininess = shininess_;
+	// PhongReflectionMaterial
+	cBuffer_->phongRefMaterial->data->color = phongRef_.color;
+	cBuffer_->phongRefMaterial->data->enableLighting = phongRef_.enableLighting;
+	cBuffer_->phongRefMaterial->data->enablePhongReflection = phongRef_.enablePhongReflection;
+	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = phongRef_.enableBlinnPhongReflection;
+	cBuffer_->phongRefMaterial->data->uvTransform = phongRef_.uvTransform;
+	cBuffer_->phongRefMaterial->data->specularColor = phongRef_.specularColor;
+	cBuffer_->phongRefMaterial->data->shininess = phongRef_.shininess;
 
-	// Light
-	cBuffer_->light->data->direction = lightDirection_;
+	// DirectionalLight
+	cBuffer_->light->data->color = directionlLight_.color;
+	cBuffer_->light->data->direction = directionlLight_.direction;
+	cBuffer_->light->data->intensity = directionlLight_.intensity;
 
 	// PointLight
 	cBuffer_->pointLight->data->color = pointLight_.color;
@@ -288,6 +327,7 @@ void Object3D::Update(Camera3D* camera) {
 	// Matrix
 	if (isUseGltfModel_) {
 
+		// GLTFModelのMatrix計算
 		cBuffer_->matrix->data->World = Matrix4x4::Multiply
 		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.World);
 		cBuffer_->matrix->data->WVP = Matrix4x4::Multiply
@@ -295,19 +335,19 @@ void Object3D::Update(Camera3D* camera) {
 		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
 	} else {
 
+		// GLTFModel以外のMatrix計算 基本こっち側
 		cBuffer_->matrix->data->World = matrix_.World;
 		cBuffer_->matrix->data->WVP = matrix_.WVP;
 		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
 
 		if (drawType_ == GS) {
 
-			// GS
-			gsMat.gsMatrix_ = Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+			// GSを通したときのMatrix計算￥
 			cBuffer_->gsMatrix_->data->gsMatrix_ = gsMat.gsMatrix_;
 		}
 	}
 
-	// Camera
+	// Cameraのワールド座標のセット
 	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
 
 #pragma endregion

@@ -12,7 +12,7 @@
 #include <numbers>
 #include <filesystem>
 
-// オブジェクトタイプ
+// 3Dオブジェクトタイプ
 enum class Object3DType {
 
 	Triangle,
@@ -37,19 +37,29 @@ public:
 
 	// setter
 
+	/*--------------------------------------------------------------------------*/
+	/// LightingEnableSetting ↓
+
 	void SetEnableLighting(bool enableLighting);
 	void SetEnableHalfLambert(bool enableHalfLambert);
 	void SetEnablePhongReflection(bool enablePhongReflection);
 	void SetEnableBlinnPhongReflection(bool enableBlinnPhongReflection);
 
-	void SetPointLight(PointLight pointLight);
+	/*--------------------------------------------------------------------------*/
+	/// LightSetting ↓
 
+	void SetPointLight(PointLight pointLight);
 	void SetSpotLight(SpotLight spotLight);
+
+	/*--------------------------------------------------------------------------*/
+	/// TransformSetting ↓
 
 	void SetScale(Vector3 scale);
 	void SetRotate(Vector3 rotate);
 	void SetTranslate(Vector3 translate);
 	void SetTransform(Transform transform);
+
+	/*--------------------------------------------------------------------------*/
 
 protected:
 	/*-----------------------------*/
@@ -57,27 +67,33 @@ protected:
 	/*-----------------------------*/
 
 	// CreateBuffer
-	std::unique_ptr<VertexResource> vertexResource_;
+	VertexResource vertexResource_;
 
-	// バッファデータ
+	// 定数バッファデータ
 	std::unique_ptr<CBufferData> cBuffer_ = nullptr;
 
-	// matrix
+	// AffineMatrix
 	TransformationMatrix matrix_{};
+	// GS
 	GSMatrix4x4 gsMat{};
 
-	// アフィン
+	// SRT
 	Transform transform_{};
 
-	// 色
-	Vector4 color_{};
+	// Material
+	Material material_{};
 
-	// ライトの向き
-	Vector3 lightDirection_{};
+#pragma region ///*  LightVariable  *///
+
+	// 平行光源
+	DirectionalLight directionlLight_{};
 	// ポイントライト
 	PointLight pointLight_{};
 	// スポットライト
 	SpotLight spotLight_{};
+
+	// 全てのライト
+	PunctualLight light_{};
 
 	// Lightingの有無
 	bool enableLighting_{};
@@ -87,4 +103,7 @@ protected:
 	bool enablePhongReflection_{};
 	// BlinnPhongReflectionの有無
 	bool enableBlinnPhongReflection_{};
+
+#pragma endregion
+
 };

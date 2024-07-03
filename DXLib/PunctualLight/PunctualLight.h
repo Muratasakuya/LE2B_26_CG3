@@ -40,6 +40,19 @@ struct SpotLight {
 	float padding[2];
 };
 
+// 全てのライトを統括した構造体
+struct PunctualLight {
+
+	// 平行光源
+	DirectionalLight directional;
+
+	// 点光源
+	PointLight point;
+
+	// スポットライト
+	SpotLight spot;
+};
+
 // CBライトデータ
 struct CBLightData {
 

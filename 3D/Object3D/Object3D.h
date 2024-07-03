@@ -39,13 +39,19 @@ private:
 	///			メンバ変数
 	/*-----------------------------*/
 
+	// 3Dオブジェクトタイプ
 	Object3DType objectType_{};
+
+	// 描画タイプ
 	PipelineType drawType_{};
+
+	// ブレンドモード
 	BlendMode blendMode_{};
 
-	Vector3 specularColor_{};
-	float shininess_{};
+	// PhongReflectionMaterial
+	PhongRefMaterial phongRef_{};
 
+	// 3Dオブジェクトに使用するもの
 	std::string textureName_;
 	std::string modelName_;
 	std::string gltfModelName_;
