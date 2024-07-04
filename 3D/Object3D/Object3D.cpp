@@ -7,6 +7,7 @@
 #include "ImGuiManager.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
+#include "ConstBufferManager.h"
 
 
 
@@ -25,44 +26,12 @@ void Object3D::SetIsUseGLTFModel(bool useGltfModel, const std::string& modelName
 /*////////////////////////////////////////////////////////////////////////////////
 *								コンストラクタ
 ////////////////////////////////////////////////////////////////////////////////*/
-Object3D::Object3D() {
-
-	cBuffer_ = std::make_unique<CBufferData>();
-
-	// CBufferの作成
-
-	// Material
-	cBuffer_->material = vertexResource_.CreateMaterial();
-	cBuffer_->phongRefMaterial = vertexResource_.CreatePhongRefMaterial();
-
-	// Matrix
-	cBuffer_->matrix = vertexResource_.CreateWVP();
-	cBuffer_->gsMatrix_ = vertexResource_.CreateGSMatrix();
-
-	// Light
-	cBuffer_->light = vertexResource_.CreateLight();
-	cBuffer_->pointLight = vertexResource_.CreatePointLight();
-	cBuffer_->spotLight = vertexResource_.CreateSpotLight();
-
-	// Camera
-	cBuffer_->camera = vertexResource_.CreateCamera();
-}
+Object3D::Object3D() {}
 
 /*////////////////////////////////////////////////////////////////////////////////
 *								 デストラクタ
 ////////////////////////////////////////////////////////////////////////////////*/
-Object3D::~Object3D() {
-
-	// 解放処理
-	cBuffer_->material.reset();
-	cBuffer_->phongRefMaterial.reset();
-	cBuffer_->matrix.reset();
-	cBuffer_->light.reset();
-	cBuffer_->pointLight.reset();
-	cBuffer_->spotLight.reset();
-	cBuffer_->camera.reset();
-	cBuffer_.reset();
-}
+Object3D::~Object3D() {}
 
 
 
@@ -82,35 +51,35 @@ void Object3D::Initialize(
 	// ブレンドの設定
 	blendMode_ = blendMode;
 
-#pragma region /// cBufferDefaultInitialize ///
+#pragma region /// DefaultInitialize ///
 
 	/*--------------------------------------------------------------------------*/
 	/// LightDefaultInitialize ↓
 
 	// 平行光源
-	directionlLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	light_.directional.color = { 1.0f,1.0f,1.0f,1.0f };
 	// デフォルトは上から
-	directionlLight_.direction = { 0.0f,-1.0f,0.0f };
-	directionlLight_.intensity = 1.0f;
+	light_.directional.direction = { 0.0f,-1.0f,0.0f };
+	light_.directional.intensity = 1.0f;
 
 	// ポイントライト
-	pointLight_.color = { 1.0f,1.0f,1.0f,1.0f };
+	light_.point.color = { 1.0f,1.0f,1.0f,1.0f };
 	// デフォルトは上から
-	pointLight_.pos = { 0.0f,1.0f,0.0f };
-	pointLight_.intensity = 1.0f;
-	pointLight_.radius = 5.0f;
-	pointLight_.decay = 1.0f;
+	light_.point.pos = { 0.0f,1.0f,0.0f };
+	light_.point.intensity = 1.0f;
+	light_.point.radius = 5.0f;
+	light_.point.decay = 1.0f;
 
 	// スポットライト
-	spotLight_.color = { 1.0f,1.0f,1.0f,1.0f };
-	spotLight_.pos = { 0.0f,0.0f,0.0f };
-	spotLight_.distance = 5.0f;
+	light_.spot.color = { 1.0f,1.0f,1.0f,1.0f };
+	light_.spot.pos = { 0.0f,0.0f,0.0f };
+	light_.spot.distance = 5.0f;
 	// デフォルトは右から
-	spotLight_.direction = Vector3::Normalize({ -1.0f,-1.0f,0.0 });
-	spotLight_.intensity = 1.0f;
-	spotLight_.decay = 1.0f;
-	spotLight_.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
-	spotLight_.cosFalloffStart = 1.0f;
+	light_.spot.direction = Vector3::Normalize({ -1.0f,-1.0f,0.0 });
+	light_.spot.intensity = 1.0f;
+	light_.spot.decay = 1.0f;
+	light_.spot.cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
+	light_.spot.cosFalloffStart = 1.0f;
 
 	/*--------------------------------------------------------------------------*/
 	/// MaterialDefaultInitialize ↓
@@ -153,71 +122,8 @@ void Object3D::Initialize(
 	isUseGltfModel_ = false;
 	gltfModelName_ = "";
 
-	/*--------------------------------------------------------------------------*/
-	/// CBufferDefaultInitialize ↓
-
-	// Material
-	cBuffer_->material->data->color = material_.color;
-	cBuffer_->material->data->enableLighting = material_.enableLighting;
-	cBuffer_->material->data->enableHalfLambert = material_.enableHalfLambert;
-	cBuffer_->material->data->uvTransform = material_.uvTransform;
-
-	// PhongReflectionMaterial
-	cBuffer_->phongRefMaterial->data->color = phongRef_.color;
-	cBuffer_->phongRefMaterial->data->enableLighting = phongRef_.enableLighting;
-	cBuffer_->phongRefMaterial->data->enablePhongReflection = phongRef_.enablePhongReflection;
-	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = phongRef_.enableBlinnPhongReflection;
-	cBuffer_->phongRefMaterial->data->uvTransform = phongRef_.uvTransform;
-	cBuffer_->phongRefMaterial->data->specularColor = phongRef_.specularColor;
-	cBuffer_->phongRefMaterial->data->shininess = phongRef_.shininess;
-
-	// DirectionalLight
-	cBuffer_->light->data->color = directionlLight_.color;
-	cBuffer_->light->data->direction = directionlLight_.direction;
-	cBuffer_->light->data->intensity = directionlLight_.intensity;
-
-	// PointLight
-	cBuffer_->pointLight->data->color = pointLight_.color;
-	cBuffer_->pointLight->data->pos = pointLight_.pos;
-	cBuffer_->pointLight->data->intensity = pointLight_.intensity;
-	cBuffer_->pointLight->data->radius = pointLight_.radius;
-	cBuffer_->pointLight->data->decay = pointLight_.decay;
-
-	// SpotLight
-	cBuffer_->spotLight->data->color = spotLight_.color;
-	cBuffer_->spotLight->data->pos = spotLight_.pos;
-	cBuffer_->spotLight->data->direction = spotLight_.direction;
-	cBuffer_->spotLight->data->distance = spotLight_.distance;
-	cBuffer_->spotLight->data->intensity = spotLight_.intensity;
-	cBuffer_->spotLight->data->cosAngle = spotLight_.cosAngle;
-	cBuffer_->spotLight->data->cosFalloffStart = spotLight_.cosFalloffStart;
-	cBuffer_->spotLight->data->decay = spotLight_.decay;
-
-	// Matrix
-	if (isUseGltfModel_) {
-
-		// GLTFModelのMatrix計算
-		cBuffer_->matrix->data->World = Matrix4x4::Multiply
-		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.World);
-		cBuffer_->matrix->data->WVP = Matrix4x4::Multiply
-		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.WVP);
-		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
-	} else {
-
-		// GLTFModel以外のMatrix計算 基本こっち側
-		cBuffer_->matrix->data->World = matrix_.World;
-		cBuffer_->matrix->data->WVP = matrix_.WVP;
-		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
-
-		if (drawType_ == GS) {
-
-			// GSを通したときのMatrix計算￥
-			cBuffer_->gsMatrix_->data->gsMatrix_ = gsMat.gsMatrix_;
-		}
-	}
-
-	// Cameraのワールド座標のセット
-	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
+	// カメラワールド座標の取得
+	cameraWorldPos_ = camera->GetWorldPos();
 
 #pragma endregion
 
@@ -239,6 +145,23 @@ void Object3D::Initialize(
 		std::string identifierModel = modelPath.stem().string();
 		modelName_ = identifierModel;
 	}
+}
+
+
+
+/*////////////////////////////////////////////////////////////////////////////////
+*							CBufferの初期化
+////////////////////////////////////////////////////////////////////////////////*/
+void Object3D::InitializeCBuffer(const std::string& name) {
+
+	name_ = name;
+
+	cBuffer_ = ConstBufferManager::GetInstance();
+
+	// ConstBufferの初期化
+	cBuffer_->CreateConstBufferData(name_);
+	cBuffer_->InitializeConstBuffer(
+		name_, material_, phongRef_, matrix_, gsMat, light_, cameraWorldPos_, drawType_, isUseGltfModel_);
 }
 
 
@@ -267,16 +190,6 @@ void Object3D::UpdateImGui(const std::string& objectName) {
 ////////////////////////////////////////////////////////////////////////////////*/
 void Object3D::Update(Camera3D* camera) {
 
-#pragma region /// cBufferUpdate ///
-
-	if (enableBlinnPhongReflection_) {
-
-		enablePhongReflection_ = false;
-	} else if (!enableBlinnPhongReflection_) {
-
-		enablePhongReflection_ = true;
-	}
-
 	// Matrixの計算
 	matrix_.World =
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -285,75 +198,15 @@ void Object3D::Update(Camera3D* camera) {
 	matrix_.WorldInverseTranspose =
 		Matrix4x4::Transpose(Matrix4x4::Inverse(matrix_.World));
 	// GSMatrixの計算
-	gsMat.gsMatrix_ = Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
+	gsMat.gsMatrix_ =
+		Matrix4x4::Multiply(matrix_.World, Matrix4x4::Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()));
 
-	// Material
-	cBuffer_->material->data->color = material_.color;
-	cBuffer_->material->data->enableLighting = material_.enableLighting;
-	cBuffer_->material->data->enableHalfLambert = material_.enableHalfLambert;
-	cBuffer_->material->data->uvTransform = material_.uvTransform;
+	// カメラワールド座標の取得
+	cameraWorldPos_ = camera->GetWorldPos();
 
-	// PhongReflectionMaterial
-	cBuffer_->phongRefMaterial->data->color = phongRef_.color;
-	cBuffer_->phongRefMaterial->data->enableLighting = phongRef_.enableLighting;
-	cBuffer_->phongRefMaterial->data->enablePhongReflection = phongRef_.enablePhongReflection;
-	cBuffer_->phongRefMaterial->data->enableBlinnPhongReflection = phongRef_.enableBlinnPhongReflection;
-	cBuffer_->phongRefMaterial->data->uvTransform = phongRef_.uvTransform;
-	cBuffer_->phongRefMaterial->data->specularColor = phongRef_.specularColor;
-	cBuffer_->phongRefMaterial->data->shininess = phongRef_.shininess;
-
-	// DirectionalLight
-	cBuffer_->light->data->color = directionlLight_.color;
-	cBuffer_->light->data->direction = directionlLight_.direction;
-	cBuffer_->light->data->intensity = directionlLight_.intensity;
-
-	// PointLight
-	cBuffer_->pointLight->data->color = pointLight_.color;
-	cBuffer_->pointLight->data->pos = pointLight_.pos;
-	cBuffer_->pointLight->data->intensity = pointLight_.intensity;
-	cBuffer_->pointLight->data->radius = pointLight_.radius;
-	cBuffer_->pointLight->data->decay = pointLight_.decay;
-
-	// SpotLight
-	cBuffer_->spotLight->data->color = spotLight_.color;
-	cBuffer_->spotLight->data->pos = spotLight_.pos;
-	cBuffer_->spotLight->data->direction = spotLight_.direction;
-	cBuffer_->spotLight->data->distance = spotLight_.distance;
-	cBuffer_->spotLight->data->intensity = spotLight_.intensity;
-	cBuffer_->spotLight->data->cosAngle = spotLight_.cosAngle;
-	cBuffer_->spotLight->data->cosFalloffStart = spotLight_.cosFalloffStart;
-	cBuffer_->spotLight->data->decay = spotLight_.decay;
-
-	// Matrix
-	if (isUseGltfModel_) {
-
-		// GLTFModelのMatrix計算
-		cBuffer_->matrix->data->World = Matrix4x4::Multiply
-		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.World);
-		cBuffer_->matrix->data->WVP = Matrix4x4::Multiply
-		(ModelManager::GetInstance()->GetModelData(gltfModelName_).rootNode.localMatrix, matrix_.WVP);
-		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
-	} else {
-
-		// GLTFModel以外のMatrix計算 基本こっち側
-		cBuffer_->matrix->data->World = matrix_.World;
-		cBuffer_->matrix->data->WVP = matrix_.WVP;
-		cBuffer_->matrix->data->WorldInverseTranspose = matrix_.WorldInverseTranspose;
-
-		if (drawType_ == GS) {
-
-			// GSを通したときのMatrix計算￥
-			cBuffer_->gsMatrix_->data->gsMatrix_ = gsMat.gsMatrix_;
-		}
-	}
-
-	// Cameraのワールド座標のセット
-	cBuffer_->camera->data->worldPosition = camera->GetWorldPos();
-
-#pragma endregion
-
+	cBuffer_->UpdateConstBuffer(
+		name_, material_, phongRef_, matrix_, gsMat, light_, cameraWorldPos_, drawType_, isUseGltfModel_);
 }
-
 
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -366,28 +219,28 @@ void Object3D::Draw() {
 		// 三角形
 	case Object3DType::Triangle:
 
-		Engine::DrawTriangle(cBuffer_.get(), textureName_, drawType_, blendMode_);
+		Engine::DrawTriangle(name_, textureName_, drawType_, blendMode_);
 
 		break;
 
 		// 球
 	case Object3DType::Sphere:
 
-		Engine::DrawSphere(cBuffer_.get(), textureName_, drawType_, blendMode_);
+		Engine::DrawSphere(name_, textureName_, drawType_, blendMode_);
 
 		break;
 
 		// モデル
 	case Object3DType::Model:
 
-		Engine::DrawModel(cBuffer_.get(), modelName_, textureName_, drawType_, blendMode_);
+		Engine::DrawModel(name_, modelName_, textureName_, drawType_, blendMode_);
 
 		break;
 
 		// GS
 	case Object3DType::GS:
 
-		Engine::DrawGSModel(cBuffer_.get(), textureName_, drawType_, blendMode_);
+		Engine::DrawGSModel(name_, textureName_, drawType_, blendMode_);
 
 		break;
 	}

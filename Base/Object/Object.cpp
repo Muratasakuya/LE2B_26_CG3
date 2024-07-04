@@ -1,25 +1,25 @@
 #include "Object.h"
 
 
-// enableLighting_ = enableLighting setter
+// material_.enableLighting = enableLighting setter
 void Object::SetEnableLighting(bool enableLighting) {
 
-	enableLighting_ = enableLighting;
+	material_.enableLighting = enableLighting;
 }
-// enableHalfLambert_ = enableHalfLambert setter
+// material_.enableHalfLambert = enableHalfLambert setter
 void Object::SetEnableHalfLambert(bool enableHalfLambert) {
 
-	enableHalfLambert_ = enableHalfLambert;
+	material_.enableHalfLambert = enableHalfLambert;
 }
-// enablePhongReflection_ = enablePhongReflection setter
+// phongRef_.enablePhongReflection = enablePhongReflection setter
 void Object::SetEnablePhongReflection(bool enablePhongReflection) {
 
-	enablePhongReflection_ = enablePhongReflection;
+	phongRef_.enablePhongReflection = enablePhongReflection;
 }
 // enableBlinnPhongReflection_ = enableBlinnPhongReflection setter
 void Object::SetEnableBlinnPhongReflection(bool enableBlinnPhongReflection) {
 
-	enableBlinnPhongReflection_ = enableBlinnPhongReflection;
+	phongRef_.enableBlinnPhongReflection = enableBlinnPhongReflection;
 }
 
 

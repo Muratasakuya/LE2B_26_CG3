@@ -35,6 +35,17 @@ enum BlendMode {
 	kBlendModeScreen,   // スクリーン
 };
 
+// Engine描画関数
+enum DrawFuncType {
+
+	DTriangle,
+	DSprite,
+	DSphere,
+	DModel,
+	DParticle,
+	DGSModel
+};
+
 // パイプラインタイプの数
 static const uint32_t pipelineTypeNum = 5;
 

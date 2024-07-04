@@ -40,7 +40,7 @@ void Camera3D::Initialize() {
 	// アフィン
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.0f,0.0f,0.0f };
-	transform_.translate = { 0.0f,0.0f,-20.0f };
+	transform_.translate = { 0.0f,0.0f,-10.0f };
 
 	cameraMatrix_ =
 		Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);

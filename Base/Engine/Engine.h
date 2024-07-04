@@ -25,10 +25,11 @@ class DXCommon;
 class ImGuiManager;
 class TextureManager;
 class ModelManager;
+class ConstBufferManager;
 
 /*////////////////////////////////////////////////////////////////////////////////
 *
-*									Engine Class
+*								Engine Class
 *
 ////////////////////////////////////////////////////////////////////////////////*/
 class Engine {
@@ -56,24 +57,24 @@ public:
 	/// 描画関数
 
 	// 三角形
-	static void DrawTriangle(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+	static void DrawTriangle(const std::string& name, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// スプライト
-	static void DrawSprite(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+	static void DrawSprite(const std::string& name, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// 球
-	static void DrawSphere(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+	static void DrawSphere(const std::string& name, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// モデル
-	static void DrawModel(const CBufferData* cBufferData, const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+	static void DrawModel(const std::string& name, const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// パーティクル
 	static void DrawParticle(
-		const CBufferData* cBufferData, const UINT vertexNum, const UINT instanceCount, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle,
+		const std::string& name, const UINT vertexNum, const UINT instanceCount, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle,
 		const std::string modelName, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 	// GS
-	static void DrawGSModel(const CBufferData* cBufferData, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
+	static void DrawGSModel(const std::string& name, const std::string textureName, PipelineType pipelineType, BlendMode blendMode);
 
 private:
 	/*-----------------------------*/
@@ -85,6 +86,7 @@ private:
 	static ImGuiManager* imguiManager_;
 	static TextureManager* textureManger_;
 	static ModelManager* modelManager_;
+	static ConstBufferManager* constBufferManager_;
 	static std::unique_ptr<Mesh> mesh_;
 	static std::unique_ptr<Sprite> sprite_;
 	static std::unique_ptr<PipelineManager> pipelineManager_;

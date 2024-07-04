@@ -3,6 +3,7 @@
 // Base
 #include "Object.h"
 
+class ConstBufferManager;
 class Camera3D;
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -23,6 +24,7 @@ public:
 	void Initialize(
 		Camera3D* camera,const Object3DType& objectType,const PipelineType& drawType,const BlendMode& blendMode,
 		const std::string& textureName, const std::optional<std::string>& modelName = std::nullopt);
+	void InitializeCBuffer(const std::string& name);
 
 	void UpdateImGui(const std::string& objectName);
 
@@ -39,6 +41,8 @@ private:
 	///			メンバ変数
 	/*-----------------------------*/
 
+	ConstBufferManager* cBuffer_ = nullptr;
+
 	// 3Dオブジェクトタイプ
 	Object3DType objectType_{};
 
@@ -47,9 +51,6 @@ private:
 
 	// ブレンドモード
 	BlendMode blendMode_{};
-
-	// PhongReflectionMaterial
-	PhongRefMaterial phongRef_{};
 
 	// 3Dオブジェクトに使用するもの
 	std::string textureName_;

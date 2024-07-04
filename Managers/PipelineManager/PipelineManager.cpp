@@ -333,9 +333,9 @@ void PipelineManager::CreatePipelineStateObject(DXCommon* dxCommon) {
 
 			// PipelineState
 			CreatePipelineState(
-				dxCommon, vsBlob_[pipelineType].Get(), psBlob_[pipelineType].Get(),gsBlob_.Get(), rootSignature_->GetRootSignature(pipelineType), inputLayout_->GetInputLayoutDesc(pipelineType),
-				blendState, rasterizerState_->GetRasterizerDesc(), depthStencil_->GetDepthStencilDesc(),
-				pipelineType, blendType);
+				dxCommon, vsBlob_[pipelineType].Get(), psBlob_[pipelineType].Get(),gsBlob_.Get(), rootSignature_->GetRootSignature(pipelineType),
+				inputLayout_->GetInputLayoutDesc(pipelineType),blendState, rasterizerState_->GetRasterizerDesc(),
+				depthStencil_->GetDepthStencilDesc(),pipelineType, blendType);
 		}
 	}
 }

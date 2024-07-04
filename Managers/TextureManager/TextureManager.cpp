@@ -154,8 +154,8 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	// ハンドルを生成
 	UINT descriptorSize = dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCPUDescriptorHandle(dxCommon->GetSRVDescriptorHeap(), descriptorSize, static_cast<uint32_t>(textures_.size() + 2));
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = GetGPUDescriptorHandle(dxCommon->GetSRVDescriptorHeap(), descriptorSize, static_cast<uint32_t>(textures_.size() + 2));
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCPUDescriptorHandle(dxCommon->GetSRVDescriptorHeap(), descriptorSize, static_cast<uint32_t>(textures_.size()));
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = GetGPUDescriptorHandle(dxCommon->GetSRVDescriptorHeap(), descriptorSize, static_cast<uint32_t>(textures_.size()));
 
 	// SRVを作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};

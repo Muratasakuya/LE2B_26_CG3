@@ -69,9 +69,6 @@ protected:
 	// CreateBuffer
 	VertexResource vertexResource_;
 
-	// 定数バッファデータ
-	std::unique_ptr<CBufferData> cBuffer_ = nullptr;
-
 	// AffineMatrix
 	TransformationMatrix matrix_{};
 	// GS
@@ -82,6 +79,8 @@ protected:
 
 	// Material
 	Material material_{};
+	// PhongReflectionMaterial
+	PhongRefMaterial phongRef_{};
 
 #pragma region ///*  LightVariable  *///
 
@@ -95,15 +94,12 @@ protected:
 	// 全てのライト
 	PunctualLight light_{};
 
-	// Lightingの有無
-	bool enableLighting_{};
-	// HalfLambertの有無
-	bool enableHalfLambert_{};
-	// PhongReflectionの有無
-	bool enablePhongReflection_{};
-	// BlinnPhongReflectionの有無
-	bool enableBlinnPhongReflection_{};
-
 #pragma endregion
+
+	// カメラワールド座標
+	Vector3 cameraWorldPos_{};
+
+	// オブジェクトの名前
+	std::string name_;
 
 };

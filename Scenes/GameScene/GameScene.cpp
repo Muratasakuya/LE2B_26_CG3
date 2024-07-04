@@ -36,28 +36,26 @@ GameScene::GameScene() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	/*--------------------------------------------*/
-	/* 三角形 */
-
 	// 生成
 	triangle_ = std::make_unique<Object3D>();
-
 	// 初期化
 	triangle_->Initialize(
-		camera3D_.get(), Object3DType::Triangle, GS, kBlendModeNormal,
-		"uvChecker.png", "");
-
-	/*--------------------------------------------*/
-	/* plane */
+		camera3D_.get(), Object3DType::Triangle, Normal, kBlendModeNormal, "uvChecker.png", "");
+	triangle_->InitializeCBuffer("triangle");
 
 	// 生成
-	plane_ = std::make_unique<Object3D>();
-
+	sphere_ = std::make_unique<Object3D>();
 	// 初期化
-	plane_->Initialize(
-		camera3D_.get(), Object3DType::GS, GS, kBlendModeNormal,
-		"uvChecker.png", "");
+	sphere_->Initialize(
+		camera3D_.get(),Object3DType::Sphere,PhongReflection,kBlendModeNormal, "uvChecker.png", "");
+	sphere_->InitializeCBuffer("sphere");
 
+	// 生成
+	model_ = std::make_unique<Object3D>();
+	// 初期化
+	model_->Initialize(
+		camera3D_.get(), Object3DType::Model, PhongReflection, kBlendModeNormal, "monsterBall.png", "axis.obj");
+	model_->InitializeCBuffer("model");
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -67,8 +65,9 @@ GameScene::~GameScene() {
 
 	camera2D_.reset();
 	camera3D_.reset();
-	plane_.reset();
 	triangle_.reset();
+	sphere_.reset();
+	model_.reset();
 }
 
 
@@ -129,18 +128,9 @@ void GameScene::Update() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	/*--------------------------------------------*/
-	/* 三角形 */
-
-	//triangle_->UpdateImGui("triangle");
 	triangle_->Update(camera3D_.get());
-
-	/*--------------------------------------------*/
-	/* plane */
-
-	plane_->UpdateImGui("gs");
-	plane_->Update(camera3D_.get());
-
+	sphere_->Update(camera3D_.get());
+	//model_->Update(camera3D_.get());
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -156,14 +146,8 @@ void GameScene::Draw() {
 	/*======================================================*/
 	// 3Dオブジェクト
 
-	/*--------------------------------------------*/
-	/* 三角形 */
-
-	//triangle_->Draw();
-
-	/*--------------------------------------------*/
-	/* plane */
-
-	plane_->Draw();
+	triangle_->Draw();
+	//sphere_->Draw();
+	//model_->Draw();
 
 }
